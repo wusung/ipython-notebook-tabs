@@ -13,7 +13,7 @@ var domIsModified = false;
 IPython.Notebook.prototype.get_cell_elements = function () {
     // return $("#notebook-container").find(".cell").not('.cell .cell');
     if (domIsModified)
-        return $("#notebook-container").find(".cell");
+        return $("#notebook-container .active").find(".cell");
     else 
         return $("#notebook-container").find(".cell").not('.cell .cell');
 };
