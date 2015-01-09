@@ -4,11 +4,27 @@
 // Copyright (c) IPython Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-$([IPython.events]).on('selected_cell_type_changed.Notebook', function() {
-    
-});
+// Notebook.prototype.find_cell_index = function (cell) {
+//     return 0;
+// };
+
+var domIsModified = false;
+
+IPython.Notebook.prototype.get_cell_elements = function () {
+    // return $("#notebook-container").find(".cell").not('.cell .cell');
+    if (domIsModified)
+        return $("#notebook-container").find(".cell");
+    else 
+        return $("#notebook-container").find(".cell").not('.cell .cell');
+};
+
+// IPython.Notebook.prototype.get_selected_cell = function () {
+//     return $("#content-0 cell");
+// };
 
 $([IPython.events]).on('notebook_loaded.Notebook', function() {
+    
+    domIsModified = true;
     
     var html = '';
 
