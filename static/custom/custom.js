@@ -4,39 +4,53 @@
 // Copyright (c) IPython Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-require([
-    'base/js/namespace',
-    'base/js/utils',
-], function(IPython) {
-    "use strict";
+// require([
+//     'base/js/namespace',
+//     'base/js/events'
+// ], function(IPython, events) {
+//  events.on('app_initialized.NotebookApp', function(){
+//      IPython.toolbar.add_buttons_group([
+//          {
+//              'label'   : 'run qtconsole',
+//              'icon'    : 'icon-terminal', // select your icon from http://fortawesome.github.io/Font-Awesome/icons
+//              'callback': function () {
+//                  IPython.notebook.kernel.execute('%qtconsole')
+//              }
+//          }
+//          // add more button here if needed.
+//          ]);
+//  });
+// });
+
+
+
+$([IPython.events]).on('selected_cell_type_changed.Notebook', function() {
     
 });
 
-
 $([IPython.events]).on('notebook_loaded.Notebook', function() {
-    // $("#notebook_panel").remove();
-    $("#ipython-main-app").append('<div id="notebook_pane" class="border-box-sizing"></div>');
     
     var html = '';
-    html = '<ul class="nav nav-tabs" id="nav_tabs">';
-    html += '<li class="active">';
-    //html += '<a href="#tab-' + itemLink + '" data-url="' + itemLink + '" >' + itemName + '</a>';
-    html += '<a href="#tab-1">Notebook1<button class="close" type="button">×</button></a>';
-    html += '</li>';
+
+    $('#notebook-container').append('<div class="tabbable" id="tabs_table">');
+    $('#tabs_table').append('<ul class="nav nav-tabs" id="nav_tabs"></ul>');
+    $('#tabs_table').append('<div class="tab-content" id="tab_content">');
     
-    html += '<li>';
-    //html += '<a href="#tab-' + itemLink + '" data-url="' + itemLink + '" >' + itemName + '</a>';
-    html += '<a href="#x">+</a>';
-    html += '</li>';
+    var i = 0;
     
-    html += '</ul>';
-    $("#notebook_pane").append(html);
+    $("#notebook-container .cell").each(function() {
+        
+        var nav_id = 'nav-id_' + i;
+        var content_id = 'content-' + i;
+        //$("#ipython-main-app").append('<div id="notebook_pane" class="border-box-sizing"></div>');
+        $("#nav_tabs").append('<li id="' + nav_id + '"><a href="#' + content_id + '" data-toggle="tab">Editor ' + i + '</a></li>');
+        
+        $('#tab_content').append('<div class="tab-pane" id=content-' + i + '></div>');
+        $(this).appendTo($("#content-" + i));
+        
+        i++;
+    });
     
-    html = '<div class="tab-content" id="tab_content">';
-    html += '<div id="tab-1" class="tab-pane active"></div>';
-    html += '<div id="tab-2" class="tab-pane active">Tab2</div>';
-    html += '</div>';
-    $("#notebook_pane").append(html);
-    
-    $("#notebook_panel").appendTo("#tab-1");
+    $('.end_space').remove();
+    $('nav-id-0').addClass('active');
 });
