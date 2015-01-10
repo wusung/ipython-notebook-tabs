@@ -6,29 +6,6 @@
 
 var afterModifyDom= false;
 
-IPython.Notebook.prototype.execute_selected_cell = function (options) {
-    var default_options = {terminal: false, add_new: false};
-    $.extend(default_options, options);
-    var that = this;
-    var cell = that.get_selected_cell();
-    var cell_index = that.find_cell_index(cell);
-    if (cell instanceof IPython.CodeCell) {
-        cell.execute();
-    }
-    if (default_options.terminal) {
-        cell.select_all();
-    } else {
-        if ((cell_index === (that.ncells()-1)) && default_options.add_new) {
-            that.insert_cell_below('code');
-            // If we are adding a new cell at the end, scroll down to show it.
-            that.scroll_to_bottom();
-        } else {
-            that.select(cell_index+1);
-        };
-    };
-    this.set_dirty(true);
-};
-
 IPython.Notebook.prototype.get_cell_elements = function () {
     if (afterModifyDom)
         return $("#notebook-container .active").find(".cell");
@@ -46,11 +23,27 @@ $([IPython.events]).on('create.Cell', function(cell, index) {
         i++;
     });
     
-    $('#tab-content .tab-pane').each(function() {
-        if ($(this).find('div.cell').size() > 1) {
-           
-        }
-    });
+    // $('#tab-content .tab-pane').each(function() {
+    //     if ($(this).find('div.cell').size() > 1) {
+    //         var size = $(this).find('div.cell').size();
+    //         for (var i=1; i<size; i++) {
+    //             if ($(this).find('div.cell')[i] !== undefined) {
+    //                 $($(this).find('div.cell')[i]).appendTo('#tab-content div.tab-pane');
+    //             }
+    //         }
+    //     }
+    // });
+    
+    // $('#tab-content .tab-pane').each(function() {
+    //     if ($(this).find('div.cell').size() > 1) {
+    //         var size = $(this).find('div.cell').size();
+    //         for (var i=1; i<size; i++) {
+    //             if ($(this).find('div.cell')[i] !== undefined) {
+    //                 $($(this).find('div.cell')[i]).remove();
+    //             }
+    //         }
+    //     }
+    // });
 
 });
 
@@ -75,7 +68,7 @@ function render_editor() {
     $("#new-editor").click(function(e) {
         var nextTab = $('#nav-tabs li').size()+1;
       	$('#nav-tabs').append('<li id="nav-id_' + nextTab + '"><a href="#content-'+nextTab+'" data-toggle="tab">Editor '+nextTab+'</a></li>');
-      	$('#tab-content').append('<div class="tab-pane" id="content-'+nextTab+'">tab' +nextTab+' content</div>');
+      	$('#tab-content').append('<div class="tab-pane" id="content-'+nextTab+'"></div>');
       	$("#new-editor").appendTo('#nav-tabs');
 
       	IPython.notebook.insert_cell_below('code');
