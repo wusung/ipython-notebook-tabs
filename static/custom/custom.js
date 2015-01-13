@@ -174,17 +174,41 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
     
     $('.code_cell').appendTo('#notebook-container');
     
-        $('#notebook-container').prepend('<ul class="nav nav-tabs" id="tab-nav"/>');
-        var i=0;
-        for (var sheet in Custom.content.worksheets) {
-            if (i==0)
-                $('<li class="active"><a href="#nav-content" data-toggle="tab"> Page' + i + '</a></li>').appendTo('#tab-nav');
-            else
-                $('<li><a href="#nav-content" data-toggle="tab"> Page' + i + '</a></li>').appendTo('#tab-nav');
-            i++;
-        }
+    $('#notebook-container').prepend('<ul class="nav nav-tabs" id="tab-nav"/>');
+    var i=0;
+    for (var sheet in Custom.content.worksheets) {
+        if (i==0)
+            $('<li class="active"><a href="#nav-content-' + i + '" data-toggle="tab"> Page' + i + '</a></li>')
+                .appendTo('#tab-nav');
+        else
+            $('<li><a href="#nav-content-' + i + '" data-toggle="tab"> Page' + i + '</a></li>')
+                .appendTo('#tab-nav');
+                
+        $('.cell.code_cell[wsid=' + i + ']').appendTo('#nav-content-' + i);
+        i++;
+    }
+    
+    $("#tab-nav").append('<li id="new-page"><a href="#">+</a></li>');
+    $("#new-page").click(function(e) {
+        var nextTab = $('.nav-tabs li').size()+1;
+        $('#tab-nav').append('<li id="nav-id-' + nextTab + '"><a href="#nav-content-'+nextTab+'" data-toggle="tab">Editor '+nextTab+'</a></li>');
+      	$('#tab-content').append('<div class="tab-pane" id="nav-content-'+nextTab+'"></div>');
+        $("#new-page").appendTo('#tab-nav');
+
+    //   	IPython.notebook.insert_cell_below('code');
+    //   	// make the new tab active
+    //   	// $('#nav-tabs a')[$('#nav-tabs a').size() - 2].tab('show');
+    });    
+    
+    // make the new tab active
+    //$('#nav-tabs a')[$('#nav-tabs a').size() - 2].tab('show');
+    $('#tab-nav a:first').tab('show')
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         
-        $('.end_space').appendTo('#notebook-container');
+    });    
+    
+
+    $('.end_space').appendTo('#notebook-container');
 });
 
     /**
@@ -229,6 +253,7 @@ $([IPython.events]).on('notebook_loading.Notebook', function() {
     
         var cell =  $('<div></div>').addClass('cell border-box-sizing code_cell');
         cell.attr('tabindex','2');
+        cell.attr('wsId', Custom.worksheetIndex);
     
         var input = $('<div></div>').addClass('input');
         var prompt = $('<div/>').addClass('prompt input_prompt');
@@ -276,15 +301,6 @@ $([IPython.events]).on('notebook_loading.Notebook', function() {
 
 // });
 
-    
-    var set_content = function (data) {
-        this.content = data;
-    }
-    
-    var set_content = function () {
-        return this.content;
-    }
-
     IPython.Notebook.prototype.fromJSON = function (data) {
         Custom.content = data.content;
         var content = data.content;
@@ -299,28 +315,46 @@ $([IPython.events]).on('notebook_loading.Notebook', function() {
         this.notebook_name = data.name;
         var trusted = true;
 
+        $('<div class="tab-content" id="tab-content"/>').appendTo('#notebook-container');
         // Only handle 1 worksheet for now.
-        var worksheet = content.worksheets[get_selected_worksheet_index()];
-        if (worksheet !== undefined) {
-            if (worksheet.metadata) {
-                this.worksheet_metadata = worksheet.metadata;
-            }
-            var new_cells = worksheet.cells;
-            ncells = new_cells.length;
-            var cell_data = null;
-            var new_cell = null;
-            for (i=0; i<ncells; i++) {
-                cell_data = new_cells[i];
-                // VERSIONHACK: plaintext -> raw
-                // handle never-released plaintext name for raw cells
-                if (cell_data.cell_type === 'plaintext'){
-                    cell_data.cell_type = 'raw';
-                }
+        for (var j=0; j<content.worksheets.length; j++) {
 
-                new_cell = this.insert_cell_at_index(cell_data.cell_type, i);
-                new_cell.fromJSON(cell_data);
-                if (new_cell.cell_type == 'code' && !new_cell.output_area.trusted) {
-                    trusted = false;
+            //$('#notebook-container')
+            
+            if (j == 0) {
+                $('<div />').addClass('tab-pane')
+                .attr('id', 'nav-content-' + j)
+                .appendTo('.tab-content')
+                .addClass('active');
+            } else {
+                $('<div />').addClass('tab-pane')
+                .attr('id', 'nav-content-' + j)
+                .appendTo('.tab-content');
+            }
+            
+            var worksheet = content.worksheets[j];
+            if (worksheet !== undefined) {
+                if (worksheet.metadata) {
+                    this.worksheet_metadata = worksheet.metadata;
+                }
+                var new_cells = worksheet.cells;
+                ncells = new_cells.length;
+                var cell_data = null;
+                var new_cell = null;
+                for (i=0; i<ncells; i++) {
+                    cell_data = new_cells[i];
+                    // VERSIONHACK: plaintext -> raw
+                    // handle never-released plaintext name for raw cells
+                    if (cell_data.cell_type === 'plaintext'){
+                        cell_data.cell_type = 'raw';
+                    }
+
+                    Custom.worksheetIndex = j;    
+                    new_cell = this.insert_cell_at_index(cell_data.cell_type, i);
+                    new_cell.fromJSON(cell_data);
+                    if (new_cell.cell_type == 'code' && !new_cell.output_area.trusted) {
+                        trusted = false;
+                    }
                 }
             }
         }
@@ -328,21 +362,18 @@ $([IPython.events]).on('notebook_loading.Notebook', function() {
             this.trusted = trusted;
             $([IPython.events]).trigger("trust_changed.Notebook", trusted);
         }
-        if (content.worksheets.length > 1) {
-            IPython.dialog.modal({
-                title : "Multiple worksheets",
-                body : "This notebook has " + data.worksheets.length + " worksheets, " +
-                    "but this version of IPython can only handle the first.  " +
-                    "If you save this notebook, worksheets after the first will be lost.",
-                buttons : {
-                    OK : {
-                        class : "btn-danger"
-                    }
-                }
-            });
-        }
+        // if (content.worksheets.length > 1) {
+        //     IPython.dialog.modal({
+        //         title : "Multiple worksheets",
+        //         body : "This notebook has " + data.worksheets.length + " worksheets, " +
+        //             "but this version of IPython can only handle the first.  " +
+        //             "If you save this notebook, worksheets after the first will be lost.",
+        //         buttons : {
+        //             OK : {
+        //                 class : "btn-danger"
+        //             }
+        //         }
+        //     });
+        // }
     };
     
-    var get_selected_worksheet_index = function() {
-        return 0;
-    }
