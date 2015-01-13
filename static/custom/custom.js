@@ -117,10 +117,11 @@ require(['/static/custom/jquery.cookie.js']);
 // };
 
 IPython.Notebook.prototype.get_cell_elements = function () {
-    if (afterModifyDom)
-        return $("#notebook-container .active").find(".cell");
-    else 
-        return $("#notebook-container").find(".cell").not('.cell .cell');
+    // if (afterModifyDom)
+    //     return $(".tab-pane.active").find(".cell");
+    // else 
+    //     return $("#notebook-container").find(".cell").not('.cell .cell');
+    return $(".tab-pane.active").find(".cell");
 };
 
 // $([IPython.events]).on('create.Cell', function(cell, index) {
@@ -194,22 +195,23 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
         $('#tab-nav').append('<li id="nav-id-' + nextTab + '"><a href="#nav-content-'+nextTab+'" data-toggle="tab">Editor '+nextTab+'</a></li>');
       	$('#tab-content').append('<div class="tab-pane" id="nav-content-'+nextTab+'"></div>');
         $("#new-page").appendTo('#tab-nav');
-
+        
+        
+        $('a[data-toggle="tab"]').off('shown.bs.tab');
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            //IPython.notebook.insert_cell_below('code');
+            $('.end_space').appendTo(e.target.hash);
+            Custom.worksheetIndex = e.target.hash.replace('#nav-content-', '');
+        });        
+    
     //   	IPython.notebook.insert_cell_below('code');
     //   	// make the new tab active
     //   	// $('#nav-tabs a')[$('#nav-tabs a').size() - 2].tab('show');
     });    
     
-    // make the new tab active
-    //$('#nav-tabs a')[$('#nav-tabs a').size() - 2].tab('show');
-    $('#tab-nav a:first').tab('show')
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        
-    });    
-    
-
-    $('.end_space').appendTo('#notebook-container');
+    //$('.end_space').appendTo('#notebook-container');
 });
+
 
     /**
      * Create an HTML and CSS representation of the notebook.
@@ -377,3 +379,7 @@ $([IPython.events]).on('notebook_loading.Notebook', function() {
         // }
     };
     
+$(function() {
+    
+    
+});
