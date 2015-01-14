@@ -46,7 +46,7 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
     $("#new-page").click(function(e) {
         //var nextTab = $('.nav-tabs li').size()+1;
         var nextTab = $('.nav-tabs li').size()-1;
-        $('#tab-nav').append('<li id="nav-id-' + nextTab + '"><a href="#nav-content-'+nextTab+'" data-toggle="tab">Editor '+nextTab+'</a></li>');
+        $('#tab-nav').append('<li id="nav-id-' + nextTab + '"><a href="#nav-content-'+nextTab+'" data-toggle="tab">Page'+nextTab+'</a></li>');
       	$('#tab-content').append('<div class="tab-pane" id="nav-content-'+nextTab+'"></div>');
         $("#new-page").appendTo('#tab-nav');
         
@@ -90,7 +90,7 @@ IPython.Notebook.prototype.create_elements = function () {
     // We add this end_space div to the end of the notebook div to:
     // i) provide a margin between the last cell and the end of the notebook
     // ii) to prevent the div from scrolling up when the last cell is being
-    // edited, but is too low on the page, which browsers will do automatically. ,          0 b0. 
+    // edited, but is too low on the page, which browsers will do automatically.
     var end_space = $('<div/>').addClass('end_space');
     end_space.dblclick(function (e) {
         var ncells = that.ncells();
@@ -280,21 +280,21 @@ IPython.Notebook.prototype.toJSON = function () {
     return data;
 }; 
 
-    /**
-     * Once a session is started, link the code cells to the kernel and pass the 
-     * comm manager to the widget manager
-     *
-     */
-    IPython.Notebook.prototype._session_started = function(){
-        this.kernel = this.session.kernel;
-        var ncells = get_all_cells().length;
-        for (var i=0; i<ncells; i++) {
-            var cell = get_all_cells()[i];
-            if (cell instanceof IPython.CodeCell) {
-                cell.set_kernel(this.session.kernel);
-            }
+/**
+ * Once a session is started, link the code cells to the kernel and pass the 
+ * comm manager to the widget manager
+ *
+ */
+IPython.Notebook.prototype._session_started = function(){
+    this.kernel = this.session.kernel;
+    var ncells = get_all_cells().length;
+    for (var i=0; i<ncells; i++) {
+        var cell = get_all_cells()[i];
+        if (cell instanceof IPython.CodeCell) {
+            cell.set_kernel(this.session.kernel);
         }
-    };
+    }
+};
     
 $(function() {
     
