@@ -278,7 +278,23 @@ IPython.Notebook.prototype.toJSON = function () {
         $([IPython.events]).trigger("trust_changed.Notebook", trusted);
     }
     return data;
-};    
+}; 
+
+    /**
+     * Once a session is started, link the code cells to the kernel and pass the 
+     * comm manager to the widget manager
+     *
+     */
+    IPython.Notebook.prototype._session_started = function(){
+        this.kernel = this.session.kernel;
+        var ncells = get_all_cells().length;
+        for (var i=0; i<ncells; i++) {
+            var cell = get_all_cells()[i];
+            if (cell instanceof IPython.CodeCell) {
+                cell.set_kernel(this.session.kernel);
+            }
+        }
+    };
     
 $(function() {
     
