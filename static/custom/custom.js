@@ -4,8 +4,6 @@
 // Copyright (c) IPython Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-var afterModifyDom= false;
-
 var Custom = {};
 
 require(['/static/custom/jquery.cookie.js']);
@@ -38,7 +36,7 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
             $('<li><a href="#nav-content-' + i + '" data-toggle="tab"> Page' + i + '</a></li>')
                 .appendTo('#tab-nav');
                 
-        $('.cell.code_cell[wsid=' + i + ']').appendTo('#nav-content-' + i);
+        $('.cell[wsid=' + i + ']').appendTo('#nav-content-' + i);
         i++;
     }
     
@@ -52,9 +50,10 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
         
         $('a[data-toggle="tab"]').off('shown.bs.tab');
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-            //IPython.notebook.insert_cell_below('code');
             $('.end_space').appendTo(e.target.hash);
+            //IPython.notebook.insert_cell_below('code');
             Custom.worksheetIndex = e.target.hash.replace('#nav-content-', '');
+
         });        
     
     //   	IPython.notebook.insert_cell_below('code');
@@ -141,13 +140,37 @@ $([IPython.events]).on('notebook_loading.Notebook', function() {
     
         var output = $('<div></div>');
         cell.append(input).append(widget_area).append(output);
-        //cell.appendTo('#tab-content');
         this.element = cell;
         this.output_area = new IPython.OutputArea(output, true);
         this.completer = new IPython.Completer(this);
     };        
     
+    /**
+     * Create the DOM element of the TextCell
+     * @method create_element
+     * @private
+     */
+    IPython.TextCell.prototype.create_element = function () {
+        IPython.Cell.prototype.create_element.apply(this, arguments);
 
+        var cell = $("<div>").addClass('cell text_cell border-box-sizing');
+        cell.attr('tabindex','2');
+        cell.attr('wsId', Custom.worksheetIndex);
+
+        var prompt = $('<div/>').addClass('prompt input_prompt');
+        cell.append(prompt);
+        var inner_cell = $('<div/>').addClass('inner_cell');
+        this.celltoolbar = new IPython.CellToolbar(this);
+        inner_cell.append(this.celltoolbar.element);
+        var input_area = $('<div/>').addClass('input_area');
+        this.code_mirror = new CodeMirror(input_area.get(0), this.cm_config);
+        // The tabindex=-1 makes this div focusable.
+        var render_area = $('<div/>').addClass('text_cell_render border-box-sizing').
+            addClass('rendered_html').attr('tabindex','-1');
+        inner_cell.append(input_area).append(render_area);
+        cell.append(inner_cell);
+        this.element = cell;
+    };
 });
 
 $([IPython.events]).on("app_initialized.NotebookApp", function () {
