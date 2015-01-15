@@ -74,12 +74,8 @@ IPython.Notebook.prototype.create_elements = function () {
     var that = this;
     this.element.attr('tabindex','-1');
     
-    //this.container = $('<div class="tab-content" id="tab-content"><div class="container" id="notebook-container"></div></div>');
     this.container = $("<div/>").addClass("container").attr("id", "notebook-container");
     //this.container.append('<div class="tab-content" id="tab-content"></div>');
-    
-
-    
     //this.container = $('#tab-content');
     
     // this.container = $('<div><div class="tab-content" id="tab-content"></div>')
