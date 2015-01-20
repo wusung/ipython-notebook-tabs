@@ -29,11 +29,12 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
     $('#notebook-container').prepend('<ul class="nav nav-tabs" id="tab-nav"/>');
     var i=0;
     for (var sheet in Custom.content.worksheets) {
+        var worksheet = Custom.content.worksheets[i];
         if (i==0)
-            $('<li class="active"><a href="#nav-content-' + i + '" data-toggle="tab"> Page' + i + '</a></li>')
+            $('<li class="active"><a href="#nav-content-' + i + '" data-toggle="tab">' + worksheet.name + '</a></li>')
                 .appendTo('#tab-nav');
         else
-            $('<li><a href="#nav-content-' + i + '" data-toggle="tab"> Page' + i + '</a></li>')
+            $('<li><a href="#nav-content-' + i + '" data-toggle="tab">' + worksheet.name + '</a></li>')
                 .appendTo('#tab-nav');
                 
         $('.cell[wsid=' + i + ']').appendTo('#nav-content-' + i);
@@ -204,7 +205,6 @@ IPython.Notebook.prototype.fromJSON = function (data) {
     var trusted = true;
 
     $('<div class="tab-content" id="tab-content"/>').appendTo('#notebook-container');
-    // Only handle 1 worksheet for now.
     for (var j=0; j<content.worksheets.length; j++) {
 
         //$('#notebook-container')
@@ -291,6 +291,7 @@ IPython.Notebook.prototype.toJSON = function () {
         if (worksheets[wsid].cells === undefined) {
             worksheets[wsid].cells = [];
         }
+        worksheets[wsid]['name'] = $('a[href="#nav-content-' + wsid + '"]').html();
         worksheets[wsid].cells.push(cell.toJSON()); 
     }
 
