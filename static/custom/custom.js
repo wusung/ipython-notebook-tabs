@@ -40,7 +40,7 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
         i++;
     }
     
-    $("#tab-nav").append('<li id="new-page"><a href="#">+</a></li>')
+    $("#tab-nav").append('<li id="new-page"><a href="javascript:void(0);" class="icon-plus"></a></li>')
         .blur(function() {
             $(this).attr('contenteditable', 'false');
         })
@@ -60,7 +60,8 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
             //IPython.notebook.insert_cell_below('code');
             Custom.worksheetIndex = e.target.hash.replace('#nav-content-', '');
 
-        });        
+        });
+        $('#nav-content-2').tab('show');
     
     //   	IPython.notebook.insert_cell_below('code');
     //   	// make the new tab active
