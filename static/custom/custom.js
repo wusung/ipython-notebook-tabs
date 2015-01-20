@@ -40,7 +40,13 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
         i++;
     }
     
-    $("#tab-nav").append('<li id="new-page"><a href="#">+</a></li>');
+    $("#tab-nav").append('<li id="new-page"><a href="#">+</a></li>')
+        .blur(function() {
+            $(this).attr('contenteditable', 'false');
+        })
+        .dblclick(function() {
+            $(this).attr('contenteditable', 'true');
+        });
     $("#new-page").click(function(e) {
         //var nextTab = $('.nav-tabs li').size()+1;
         var nextTab = $('.nav-tabs li').size()-1;
