@@ -58,11 +58,11 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
         $('a[data-toggle="tab"]').off('shown.bs.tab');
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             $('.end_space').appendTo(e.target.hash);
-            //IPython.notebook.insert_cell_below('code');
             Custom.worksheetIndex = e.target.hash.replace('#nav-content-', '');
-
+            if ($('#nav-content-' + Custom.worksheetIndex).find('div.cell').length == 0) {
+                IPython.notebook.insert_cell_below('code');
+            }
         });
-        $('#nav-content-2').tab('show');
     
     //   	IPython.notebook.insert_cell_below('code');
     //   	// make the new tab active
