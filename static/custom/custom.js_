@@ -8,9 +8,9 @@ var Custom = {};
 
 require(['/static/custom/jquery.cookie.js']);
 
-require(["base/js/events"], function (events) {
-    
-    IPython.load_extensions('module-sidebar/module-sidebar'); 
+IPython.Notebook.prototype.get_cell_elements = function () {
+    return $(".tab-pane.active").find(".cell");
+};
 
 $([IPython.events]).on('create.Cell', function(cell, index) {
     // var i = 0;
@@ -24,7 +24,6 @@ $([IPython.events]).on('create.Cell', function(cell, index) {
 });
 
 $([IPython.events]).on('notebook_loaded.Notebook', function() {
-
     $('.code_cell').appendTo('#notebook-container');
     
     $('#notebook-container').prepend('<ul class="nav nav-tabs" id="tab-nav"/>');
@@ -46,7 +45,7 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
         //var nextTab = $('.nav-tabs li').size()+1;
         var nextTab = $('.nav-tabs li').size()-1;
         $('#tab-nav').append('<li id="nav-id-' + nextTab + '"><a href="#nav-content-'+nextTab+'" data-toggle="tab">Page'+nextTab+'</a></li>');
-        $('#tab-content').append('<div class="tab-pane" id="nav-content-'+nextTab+'"></div>');
+      	$('#tab-content').append('<div class="tab-pane" id="nav-content-'+nextTab+'"></div>');
         $("#new-page").appendTo('#tab-nav');
         
         $('a[data-toggle="tab"]').off('shown.bs.tab');
@@ -57,17 +56,46 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
 
         });        
     
-    //      IPython.notebook.insert_cell_below('code');
-    //      // make the new tab active
-    //      // $('#nav-tabs a')[$('#nav-tabs a').size() - 2].tab('show');
+    //   	IPython.notebook.insert_cell_below('code');
+    //   	// make the new tab active
+    //   	// $('#nav-tabs a')[$('#nav-tabs a').size() - 2].tab('show');
     });    
     
     $('.end_space').appendTo('.tab-pane.active');
 });
 
-//$([IPython.events]).on('notebook_loaded.Notebook', function() {
-$([IPython.events]).on('notebook_loading.Notebook', function() {
 
+/**
+ * Create an HTML and CSS representation of the notebook.
+ * 
+ * @method create_elements
+ */
+IPython.Notebook.prototype.create_elements = function () {
+    var that = this;
+    this.element.attr('tabindex','-1');
+    
+    this.container = $("<div/>").addClass("container").attr("id", "notebook-container");
+    //this.container.append('<div class="tab-content" id="tab-content"></div>');
+    //this.container = $('#tab-content');
+    
+    // this.container = $('<div><div class="tab-content" id="tab-content"></div>')
+    //     .addClass("container").attr("id", "notebook-container");
+    //this.container = $("<div/>").addClass("container").attr("id", "notebook-container");
+    
+    // We add this end_space div to the end of the notebook div to:
+    // i) provide a margin between the last cell and the end of the notebook
+    // ii) to prevent the div from scrolling up when the last cell is being
+    // edited, but is too low on the page, which browsers will do automatically.
+    var end_space = $('<div/>').addClass('end_space');
+    end_space.dblclick(function (e) {
+        var ncells = that.ncells();
+        that.insert_cell_below('code',ncells-1);
+    });
+    this.element.append(this.container);
+    this.container.append(end_space);    
+};
+
+$([IPython.events]).on('notebook_loading.Notebook', function() {
     /** @method create_element */
     IPython.CodeCell.prototype.create_element = function () {
         IPython.Cell.prototype.create_element.apply(this, arguments);
@@ -141,46 +169,9 @@ $([IPython.events]).on('notebook_loading.Notebook', function() {
     };
 });
 
+$([IPython.events]).on("app_initialized.NotebookApp", function () {
+
 });
-
-IPython.Notebook.prototype.get_cell_elements = function () {
-    return $(".tab-pane.active").find(".cell");
-};
-
-
-
-/**
- * Create an HTML and CSS representation of the notebook.
- * 
- * @method create_elements
- */
-IPython.Notebook.prototype.create_elements = function () {
-
-    var that = this;
-    this.element.attr('tabindex','-1');
-    this.container = $("<div/>").addClass("container").attr("id", "notebook-container");
-
-    //this.container.append('<div class="tab-content" id="tab-content"></div>');
-    //this.container = $('#tab-content');
-    
-    // this.container = $('<div><div class="tab-content" id="tab-content"></div>')
-    //     .addClass("container").attr("id", "notebook-container");
-    //this.container = $("<div/>").addClass("container").attr("id", "notebook-container");
-    
-    // We add this end_space div to the end of the notebook div to:
-    // i) provide a margin between the last cell and the end of the notebook
-    // ii) to prevent the div from scrolling up when the last cell is being
-    // edited, but is too low on the page, which browsers will do automatically.
-    var end_space = $('<div/>').addClass('end_space');
-    end_space.dblclick(function (e) {
-        var ncells = that.ncells();
-        that.insert_cell_below('code',ncells-1);
-    });
-    this.element.append(this.container);
-    this.container.append(end_space);    
-};
-
-
 
 /**
  * Load a notebook from JSON (.ipynb).
@@ -205,8 +196,7 @@ IPython.Notebook.prototype.fromJSON = function (data) {
     this.notebook_name = data.name;
     var trusted = true;
 
-    if ($('#tab-content').length == 0)
-        $('<div class="tab-content" id="tab-content"/>').appendTo('#notebook-container');
+    $('<div class="tab-content" id="tab-content"/>').appendTo('#notebook-container');
     // Only handle 1 worksheet for now.
     for (var j=0; j<content.worksheets.length; j++) {
 
