@@ -1,5 +1,4 @@
-ipython-notebook-tabs
-==================
+#IPyton Notebook with Tabs
 
 How to install
 -----------------
