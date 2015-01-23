@@ -1,4 +1,4 @@
-#IPyton Notebook with Tabs
+#IPython Notebook with Tabs
 
 How to install
 -----------------
