@@ -18,11 +18,14 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
     var i=0;
     for (var sheet in Custom.content.worksheets) {
         var worksheet = Custom.content.worksheets[i];
+        var sheet_name = worksheet.name;
+        if (worksheet.name === undefined)
+            sheet_name = 'Page ' + i;
         if (i==0)
-            $('<li class="active"><a href="#nav-content-' + i + '" data-toggle="tab">' + worksheet.name + '</a></li>')
+            $('<li class="active"><a href="#nav-content-' + i + '" data-toggle="tab">' + sheet_name + '</a></li>')
                 .appendTo('#tab-nav');
         else
-            $('<li><a href="#nav-content-' + i + '" data-toggle="tab">' + worksheet.name + '</a></li>')
+            $('<li><a href="#nav-content-' + i + '" data-toggle="tab">' + sheet_name + '</a></li>')
                 .appendTo('#tab-nav');
                 
         $('.cell[wsid=' + i + ']').appendTo('#nav-content-' + i);
