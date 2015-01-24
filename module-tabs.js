@@ -6,8 +6,6 @@
 
 var Custom = {};
 
-require(['/static/custom/jquery.cookie.js']);
-
 $([IPython.events]).on('create.Cell', function(cell, index) {
 
 });

@@ -4,8 +4,6 @@
 // Copyright (c) IPython Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-require(['/static/custom/jquery.cookie.js']);
-
 require(["base/js/events"], function (events) {
     
     IPython.load_extensions('module-sidebar/module-sidebar'); 
