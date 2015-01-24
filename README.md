@@ -4,7 +4,7 @@ How to install
 --------------
 
 1. Copy all files in the projects to `~/.ipython/nbextensions/module-tabs/`.
-2. Add new reference in your custom.js. For example: `~/.ipython/profile_default/static/custom`
+2. Add new reference in your custom.js. For example: `~/.ipython/profile_default/static/custom/custom.js`
 	
 ```
 #!javascript
