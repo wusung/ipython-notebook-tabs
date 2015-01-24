@@ -30,18 +30,25 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
     $('#notebook-container').prepend('<ul class="nav nav-tabs" id="tab-nav"/>');
     var i=0;
     for (var sheet in Custom.content.worksheets) {
+        var worksheet = Custom.content.worksheets[i];
         if (i==0)
-            $('<li class="active"><a href="#nav-content-' + i + '" data-toggle="tab"> Page' + i + '</a></li>')
+            $('<li class="active"><a href="#nav-content-' + i + '" data-toggle="tab">' + worksheet.name + '</a></li>')
                 .appendTo('#tab-nav');
         else
-            $('<li><a href="#nav-content-' + i + '" data-toggle="tab"> Page' + i + '</a></li>')
+            $('<li><a href="#nav-content-' + i + '" data-toggle="tab">' + worksheet.name + '</a></li>')
                 .appendTo('#tab-nav');
                 
         $('.cell[wsid=' + i + ']').appendTo('#nav-content-' + i);
         i++;
     }
     
-    $("#tab-nav").append('<li id="new-page"><a href="#">+</a></li>');
+    $("#tab-nav").append('<li id="new-page"><a href="javascript:void(0);" class="icon-plus"></a></li>')
+        .blur(function() {
+            $(this).attr('contenteditable', 'false');
+        })
+        .dblclick(function() {
+            $(this).attr('contenteditable', 'true');
+        });
     $("#new-page").click(function(e) {
         //var nextTab = $('.nav-tabs li').size()+1;
         var nextTab = $('.nav-tabs li').size()-1;
@@ -52,10 +59,11 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
         $('a[data-toggle="tab"]').off('shown.bs.tab');
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             $('.end_space').appendTo(e.target.hash);
-            //IPython.notebook.insert_cell_below('code');
             Custom.worksheetIndex = e.target.hash.replace('#nav-content-', '');
-
-        });        
+            if ($('#nav-content-' + Custom.worksheetIndex).find('div.cell').length == 0) {
+                IPython.notebook.insert_cell_below('code');
+            }
+        });
     
     //      IPython.notebook.insert_cell_below('code');
     //      // make the new tab active
@@ -205,9 +213,7 @@ IPython.Notebook.prototype.fromJSON = function (data) {
     this.notebook_name = data.name;
     var trusted = true;
 
-    if ($('#tab-content').length == 0)
-        $('<div class="tab-content" id="tab-content"/>').appendTo('#notebook-container');
-    // Only handle 1 worksheet for now.
+    $('<div class="tab-content" id="tab-content"/>').appendTo('#notebook-container');
     for (var j=0; j<content.worksheets.length; j++) {
 
         //$('#notebook-container')
@@ -294,6 +300,7 @@ IPython.Notebook.prototype.toJSON = function () {
         if (worksheets[wsid].cells === undefined) {
             worksheets[wsid].cells = [];
         }
+        worksheets[wsid]['name'] = $('a[href="#nav-content-' + wsid + '"]').html();
         worksheets[wsid].cells.push(cell.toJSON()); 
     }
 
