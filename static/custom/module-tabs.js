@@ -8,19 +8,8 @@ var Custom = {};
 
 require(['/static/custom/jquery.cookie.js']);
 
-require(["base/js/events"], function (events) {
-    
-    IPython.load_extensions('module-sidebar/module-sidebar'); 
-
 $([IPython.events]).on('create.Cell', function(cell, index) {
-    // var i = 0;
-    // $("#notebook-container .cell").each(function() {
-    //     var nav_id = 'nav-id_' + i;
-    //     var content_id = 'content-' + i;
-    //     $(this).appendTo($('#content-' + i));
-        
-    //     i++;
-    // });
+
 });
 
 $([IPython.events]).on('notebook_loaded.Notebook', function() {
@@ -149,13 +138,9 @@ $([IPython.events]).on('notebook_loading.Notebook', function() {
     };
 });
 
-});
-
 IPython.Notebook.prototype.get_cell_elements = function () {
     return $(".tab-pane.active").find(".cell");
 };
-
-
 
 /**
  * Create an HTML and CSS representation of the notebook.
@@ -332,6 +317,3 @@ IPython.Notebook.prototype._session_started = function(){
     }
 };
     
-$(function() {
-    
-});
