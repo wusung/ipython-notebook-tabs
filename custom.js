@@ -15,7 +15,6 @@ require(["base/js/events"], function (events) {
 
 var utils = IPython.utils;
 
-
 $([IPython.events]).on('sessions_loaded.Dashboard', 
             function(e, d) {  
             	//IPython.load_extensions('module-tree/module-tree'); 
@@ -137,3 +136,41 @@ if (IPython.LayoutManager !== undefined)
 
         return h-header_height-menubar_height-panel_height-210; // content height
     };
+
+if (IPython.NotebookList.prototype !== undefined) {
+    IPython.NotebookList.prototype.new_notebook = function(){
+        var path = this.notebook_path;
+        var base_url = this.base_url;
+        var settings = {
+            processData : false,
+            cache : false,
+            type : "POST",
+            dataType : "json",
+            async : false,
+            success : function (data, status, xhr) {
+                var notebook_name = data.name;
+                // window.open(
+                //     utils.url_join_encode(
+                //         base_url,
+                //         'notebooks',
+                //         path,
+                //         notebook_name),
+                //     '_blank'
+                // );
+
+                window.location.assign(utils.url_join_encode(
+                        base_url,
+                        'notebooks',
+                        path,
+                        notebook_name));
+            },
+            error : $.proxy(this.new_notebook_failed, this),
+        };
+        var url = utils.url_join_encode(
+            base_url,
+            'api/notebooks',
+            path
+        );
+        $.ajax(url, settings);
+    };
+}
