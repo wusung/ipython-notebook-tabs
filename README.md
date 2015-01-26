@@ -1,7 +1,7 @@
 #IPython Notebook with Tabs
+--------------
 
 ## How to install
---------------
 
 ### Install IPython-notebook-module-tabs
 To install this tabs extension, please follow these steps:
