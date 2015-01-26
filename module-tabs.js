@@ -139,6 +139,7 @@ $([IPython.events]).on('notebook_loading.Notebook', function() {
     };
 });
 
+if (IPython.Notebook !== undefined)
 IPython.Notebook.prototype.get_cell_elements = function () {
     return $(".tab-pane.active").find(".cell");
 };
@@ -148,6 +149,7 @@ IPython.Notebook.prototype.get_cell_elements = function () {
  * 
  * @method create_elements
  */
+if (IPython.Notebook !== undefined)
 IPython.Notebook.prototype.create_elements = function () {
 
     var that = this;
@@ -184,7 +186,7 @@ IPython.Notebook.prototype.create_elements = function () {
  * @method fromJSON
  * @param {Object} data JSON representation of a notebook
  */
-
+if (IPython.Notebook !== undefined)
 IPython.Notebook.prototype.fromJSON = function (data) {
     Custom.content = data.content;
     var content = data.content;
@@ -259,6 +261,7 @@ var get_all_cells = function() {
  * @method toJSON
  * @return {Object} A JSON-friendly representation of this notebook.
  */
+if (IPython.Notebook !== undefined) 
 IPython.Notebook.prototype.toJSON = function () {
     var cells = get_all_cells();
     var ncells = cells.length;
@@ -280,7 +283,7 @@ IPython.Notebook.prototype.toJSON = function () {
         }
 
         if (worksheets[wsid] === undefined) {
-            worksheets.push({});
+            worksheets[wsid] = {};
         }
         
         if (worksheets[wsid].cells === undefined) {
@@ -307,6 +310,7 @@ IPython.Notebook.prototype.toJSON = function () {
  * comm manager to the widget manager
  *
  */
+if (IPython.Notebook !== undefined)
 IPython.Notebook.prototype._session_started = function(){
     this.kernel = this.session.kernel;
     var ncells = get_all_cells().length;
