@@ -226,7 +226,7 @@ IPython.Notebook.prototype.fromJSON = function (data) {
     if (content.worksheets.length == 0) {
         $('<div />').addClass('tab-pane')
             .attr('id', 'nav-content-0')
-            .appendTo('.tab-content')
+            .appendTo('#tab-content.tab-content')
             .addClass('active');
     }
 
@@ -237,12 +237,12 @@ IPython.Notebook.prototype.fromJSON = function (data) {
         if (j == 0) {
             $('<div />').addClass('tab-pane')
             .attr('id', 'nav-content-' + j)
-            .appendTo('.tab-content')
+            .appendTo('#tab-content.tab-content')
             .addClass('active');
         } else {
             $('<div />').addClass('tab-pane')
             .attr('id', 'nav-content-' + j)
-            .appendTo('.tab-content');
+            .appendTo('#tab-content.tab-content');
         }
         
         var worksheet = content.worksheets[j];
