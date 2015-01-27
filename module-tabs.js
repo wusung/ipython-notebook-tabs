@@ -69,10 +69,17 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
 
             $('.unrendered').remove();
         });
-    
-    //      IPython.notebook.insert_cell_below('code');
-    //      // make the new tab active
-    //      // $('#nav-tabs a')[$('#nav-tabs a').size() - 2].tab('show');
+
+        $('#tab-nav').find('a[data-toggle="tab"]').click(function () {
+            $(this).attr('contenteditable', 'true');
+            IPython.keyboard_manager.disable();
+        })
+        .blur(function() {
+            $(this).attr('contenteditable', 'false');
+            IPython.keyboard_manager.enable();
+        });
+
+        $('#tab-nav').unbind('click');        
     });    
     
     $('.end_space').appendTo('.tab-pane.active');
@@ -172,13 +179,6 @@ IPython.Notebook.prototype.create_elements = function () {
     var that = this;
     this.element.attr('tabindex','-1');
     this.container = $("<div/>").addClass("container").attr("id", "notebook-container");
-
-    //this.container.append('<div class="tab-content" id="tab-content"></div>');
-    //this.container = $('#tab-content');
-    
-    // this.container = $('<div><div class="tab-content" id="tab-content"></div>')
-    //     .addClass("container").attr("id", "notebook-container");
-    //this.container = $("<div/>").addClass("container").attr("id", "notebook-container");
     
     // We add this end_space div to the end of the notebook div to:
     // i) provide a margin between the last cell and the end of the notebook
