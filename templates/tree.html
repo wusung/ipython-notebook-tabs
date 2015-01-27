@@ -16,6 +16,7 @@ data-notebook-path="{{notebook_path}}"
 
 {% endblock %}
 
+<<<<<<< HEAD
 {% block subtitle %}
 Directory
 {% endblock %}
@@ -45,6 +46,10 @@ Directory
     </div>
   </div>
 </div>
+=======
+
+{% block site %}
+>>>>>>> try/1.0.0
 
 <div id="ipython-main-app" class="container">
 
@@ -74,6 +79,7 @@ Directory
             </div>
         </div>
 
+<<<<<<< HEAD
         <div class="row-fluid">
             <div id="notebook_list">
               <div id="notebook_list_header" class="row-fluid list_header">
@@ -87,6 +93,19 @@ Directory
                   </div>
               </div>
             </div>
+=======
+        <div id="notebook_list">
+          <div id="notebook_list_header" class="row-fluid list_header">
+              <div id="project_name">
+                <ul class="breadcrumb">
+                    <li><a href="{{breadcrumbs[0][0]}}"><i class="icon-home"></i></a><span>/</span></li>
+                    {% for crumb in breadcrumbs[1:] %}
+                        <li><a href="{{crumb[0]}}">{{crumb[1]}}</a> <span>/</span></li>
+                    {% endfor %}
+                </ul>
+              </div>
+          </div>
+>>>>>>> try/1.0.0
         </div>
     </div>
     
@@ -136,7 +155,10 @@ Directory
 
 </div>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> try/1.0.0
 {% endblock %}
 
 {% block script %}
