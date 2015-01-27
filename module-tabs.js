@@ -13,6 +13,13 @@ $([IPython.events]).on('create.Cell', function(cell, index) {
 $([IPython.events]).on('notebook_loaded.Notebook', function() {
 
     $('.code_cell').appendTo('#notebook-container');
+
+    Custom.isNewNotebook = false;
+    if (Custom.content.worksheets.length == 0) {
+        Custom.content.worksheets[0] = {};
+        Custom.content.worksheets[0].wsId = 0;
+        Custom.isNewNotebook = true;
+    }
     
     $('#notebook-container').prepend('<ul class="nav nav-tabs" id="tab-nav"/>');
     var i=0;
@@ -34,11 +41,22 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
     
     $("#tab-nav").append('<li id="new-page"><a href="javascript:void(0);" class="icon-plus"></a></li>')
         .blur(function() {
-            $(this).attr('contenteditable', 'false');
+            //$(this).attr('contenteditable', 'false');
         })
-        .dblclick(function() {
-            $(this).attr('contenteditable', 'true');
+        .click(function() {
+            $('#tab-nav').find('a[data-toggle="tab"]').click(function () {
+                $(this).attr('contenteditable', 'true');
+                console.log('contenteditable true');
+            })
+            .blur(function() {
+                $(this).attr('contenteditable', 'false');
+                console.log('contenteditable false');
+            });
+
+            $(this).unbind('click');
         });
+
+
     $("#new-page").click(function(e) {
         //var nextTab = $('.nav-tabs li').size()+1;
         var nextTab = $('.nav-tabs li').size()-1;
@@ -61,6 +79,8 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
     });    
     
     $('.end_space').appendTo('.tab-pane.active');
+    $('#dock').find('.launcher').find('a[href="/tree"]').parent().addClass('active', 'true');
+
 });
 
 //$([IPython.events]).on('notebook_loaded.Notebook', function() {
@@ -200,6 +220,13 @@ IPython.Notebook.prototype.fromJSON = function (data) {
     var trusted = true;
 
     $('<div class="tab-content" id="tab-content"/>').appendTo('#notebook-container');
+    if (content.worksheets.length == 0) {
+        $('<div />').addClass('tab-pane')
+            .attr('id', 'nav-content-0')
+            .appendTo('.tab-content')
+            .addClass('active');
+    }
+
     for (var j=0; j<content.worksheets.length; j++) {
 
         //$('#notebook-container')
@@ -239,6 +266,8 @@ IPython.Notebook.prototype.fromJSON = function (data) {
                     trusted = false;
                 }
             }
+
+            Custom.worksheetIndex = 0;
         }
     }
     if (trusted != this.trusted) {
