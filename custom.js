@@ -137,7 +137,7 @@ if (IPython.LayoutManager !== undefined)
         return h-header_height-menubar_height-panel_height-210; // content height
     };
 
-if (IPython.NotebookList.prototype !== undefined) {
+if (IPython.NotebookList !== undefined) {
     IPython.NotebookList.prototype.new_notebook = function(){
         var path = this.notebook_path;
         var base_url = this.base_url;

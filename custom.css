@@ -6,3 +6,7 @@
 .tab-content {
     overflow: hidden;
 }
+
+.list_header>div, .list_item>div {
+	height: 40px;
+}
