@@ -47,10 +47,13 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
             $('#tab-nav').find('a[data-toggle="tab"]').click(function () {
                 $(this).attr('contenteditable', 'true');
                 console.log('contenteditable true');
+                IPython.keyboard_manager.disable();
             })
             .blur(function() {
                 $(this).attr('contenteditable', 'false');
                 console.log('contenteditable false');
+                
+                IPython.keyboard_manager.enable();
             });
 
             $(this).unbind('click');
