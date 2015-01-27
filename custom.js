@@ -8,5 +8,5 @@ require(["base/js/events"], function (events) {
     
     IPython.load_extensions('module-sidebar/module-sidebar'); 
     IPython.load_extensions('module-tabs/module-tabs'); 
-
 });
+
