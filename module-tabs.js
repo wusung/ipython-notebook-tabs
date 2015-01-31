@@ -54,7 +54,7 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
         //var nextTab = $('.nav-tabs li').size()+1;
         var nextTab = $('#tab-nav.nav-tabs li').size()-1;
         $('#tab-nav').append('<li id="nav-id-' + nextTab + '"><a href="#nav-content-'+nextTab+'" data-toggle="tab">Page'+nextTab+'</a></li>');
-        $('#tab-content').append('<div class="tab-pane" id="nav-content-'+nextTab+'"></div>');
+        $('#tab-content').append('<div class="tab-pane tabs-tab-pane" id="nav-content-'+nextTab+'"></div>');
         $("#new-page").appendTo('#tab-nav');
         
         $('a[data-toggle="tab"]').off('shown.bs.tab');
@@ -82,7 +82,7 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
         $('#tab-nav').unbind('click');        
     });    
     
-    $('.end_space').appendTo('.tab-pane.active');
+    $('.end_space').appendTo('.tabs-tab-pane.active');
     $('#dock').find('.launcher').find('a[href="/tree"]').parent().addClass('active', 'true');
 
 });
@@ -165,7 +165,7 @@ $([IPython.events]).on('notebook_loading.Notebook', function() {
 
 if (IPython.Notebook !== undefined)
 IPython.Notebook.prototype.get_cell_elements = function () {
-    return $(".tab-pane.active").find(".cell");
+    return $(".tabs-tab-pane.active").find(".cell");
 };
 
 /**
@@ -228,11 +228,13 @@ IPython.Notebook.prototype.fromJSON = function (data) {
             $('<div />').addClass('tab-pane')
             .attr('id', 'nav-content-' + j)
             .appendTo('#tab-content.tab-content')
-            .addClass('active');
+            .addClass('active')
+            .addClass('tabs-tab-pane');
         } else {
             $('<div />').addClass('tab-pane')
             .attr('id', 'nav-content-' + j)
-            .appendTo('#tab-content.tab-content');
+            .appendTo('#tab-content.tab-content')
+            .addClass('tabs-tab-pane');
         }
         
         var worksheet = content.worksheets[j];
