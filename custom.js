@@ -24,7 +24,7 @@ require(["custom/module-tabs",
 require(['custom/jquery.cookie'], function () {
 
 	'use strict';
-	console.log('custom module loaded');
+	window.console && console.log('custom module loaded');
 
 	$('#data.tab-pane').html('');
 
@@ -38,31 +38,32 @@ require(['custom/jquery.cookie'], function () {
     	for (var i=0; i<len; i++) {
 			var item = data[len];
 			if (data[i].type === 'directory') {
-				$('<li></li>').append('<span class="folder">' + data[i].name + '</span>')
+				$('<li></li>').append('<span class="folder"><a href="' + data[i].name + '">' + data[i].name + '</a></span>')
 					.appendTo('#directory-tree.filetree');
 			} else {
-				$('<li></li>').append('<span class="file">' + data[i].name + '</span>')
+				$('<li></li>').append('<span class="file"><a href="' + data[i].name + '">' + data[i].name + '</a></span>')
 					.appendTo('#directory-tree.filetree');
 			}
     	}
-
     	$('#directory-tree.filetree').appendTo('#directory.tab-pane');
+    	(function () {
+	    	$(function(){
+				$('#directory-tree.filetree').treeview({
+					animated: "fast",
+					collapsed: true,
+					unique: true,
+					persist: "cookie",
+					"toggle": function() {
+						window.console && console.log("%o was toggled", this);
+					},
+					'click.treeview': function () {
+						window.console && console.log("%o was toggled", this);
+					}
+				});    		
+	    	})    		
+    	}( jQuery ) );    	
 
-    	$(document).ready(function(){
-			$("#directory-tree").treeview({
-				animated: "fast",
-				collapsed: true,
-				unique: true,
-				persist: "cookie",
-				toggle: function() {
-					window.console && console.log("%o was toggled", this);
-				},
-				'click.treeview': function () {
-					window.console && console.log("%o was toggled", this);
-				}
-			});    		
-    	})
-    	
+    	$('#directory').tab('show');
    	}
 
     var settings = {
