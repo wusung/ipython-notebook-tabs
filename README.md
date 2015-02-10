@@ -9,8 +9,7 @@ To install this tabs extension, please follow these steps:
 1. Copy all files in the projects to `~/.ipython/profile_default/static/custom`.
 2. Load the extension in your custom.js. For example: `~/.ipython/profile_default/static/custom/custom.js`
 	
-```
-#!javascript
+```javascript
 require(["custom/module-directory"], 
         function (events) {
 
