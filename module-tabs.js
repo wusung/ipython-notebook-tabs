@@ -222,8 +222,6 @@ IPython.Notebook.prototype.fromJSON = function (data) {
 
     for (var j=0; j<content.worksheets.length; j++) {
 
-        //$('#notebook-container')
-        
         if (j == 0) {
             $('<div />').addClass('tab-pane')
             .attr('id', 'nav-content-' + j)
