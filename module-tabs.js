@@ -10,6 +10,41 @@ $([IPython.events]).on('create.Cell', function(cell, index) {
 
 });
 
+var new_page = function () {
+    var nextTab = $('#tab-nav.nav-tabs li').size()-1;
+    if (nextTab < 0)
+        nextTab = 0;
+    $('#tab-nav').append('<li class="active" id="nav-id-' + nextTab + '"><a href="#nav-content-'+nextTab+'" data-toggle="tab">Page'+nextTab+'</a></li>');
+    $('#tab-content').append('<div class="tab-pane tabs-tab-pane active" id="nav-content-'+nextTab+'"></div>');
+    $("#new-page").appendTo('#tab-nav');
+    
+    $('a[data-toggle="tab"]').off('shown.bs.tab');
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        
+        $('.end_space').appendTo(e.target.hash);
+        Custom.worksheetIndex = e.target.hash.replace('#nav-content-', '');
+        if ($('#nav-content-' + Custom.worksheetIndex).find('div.cell').length == 0) {
+            $('.end_space').appendTo(e.target.hash);
+            IPython.notebook.insert_cell_below('code');            
+        }            
+
+        $('.unrendered').remove();
+    });
+
+    $('#tab-nav').find('a[data-toggle="tab"]').click(function () {
+        $(this).attr('contenteditable', 'true');
+        IPython.keyboard_manager.disable();
+    })
+    .blur(function() {
+        $(this).attr('contenteditable', 'false');
+        IPython.keyboard_manager.enable();
+    });
+
+    $('#tab-nav').unbind('click');  
+    $('div.cell').appendTo('#nav-content-0');
+    $('.end_space').appendTo('#nav-content-0');
+}
+
 $([IPython.events]).on('notebook_loaded.Notebook', function() {
 
     $('.code_cell').appendTo('#notebook-container');
@@ -30,6 +65,10 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
                 
         $('.cell[wsid=' + i + ']').appendTo('#nav-content-' + i);
         i++;
+    }
+
+    if (Custom.content.worksheets.length == 0) {
+        new_page();
     }
     
     $("#tab-nav").append('<li id="new-page"><a href="javascript:void(0);" class="icon-plus"></a></li>')
@@ -87,7 +126,6 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
 
 });
 
-//$([IPython.events]).on('notebook_loaded.Notebook', function() {
 $([IPython.events]).on('notebook_loading.Notebook', function() {
 
     /** @method create_element */
@@ -133,6 +171,10 @@ $([IPython.events]).on('notebook_loading.Notebook', function() {
         this.element = cell;
         this.output_area = new IPython.OutputArea(output, true);
         this.completer = new IPython.Completer(this);
+
+        if (Custom.content.worksheets.length == 0) {  
+            $('#div.cell').appendTo('#tab-content');
+        }
     };        
     
     /**
