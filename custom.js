@@ -15,6 +15,6 @@ require(["base/js/events"], function (events) {
 
 
 require(["custom/module-directory"], 
-		function (events) {
+function (events) {
 
 });

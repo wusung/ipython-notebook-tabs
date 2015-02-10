@@ -1,6 +1,4 @@
 
-var utils = IPython.utils;
-
 var nbname = '';
 
 ;(function () {
@@ -74,6 +72,8 @@ require(["custom/module-tabs",
 		        	new_notebook();
 		        } else if (key == 'shutdown') {
 		        	shutdown_notebook();
+		        } else if (key == 'rename') {
+		        	rename_notebook();
 		        }
 	        },
 	        items: {
@@ -81,15 +81,7 @@ require(["custom/module-tabs",
 	            "add": {name: "Add", icon: "add"},
 	            "rename": {name: "Rename", icon: "quit"},
 	            "shutdown": {name: "Shutdown", icon: "quit"}
-	        },
-			build: function($trigger, e){
-			  return {
-			    callback: function(){},
-			    items: {
-			        
-			    }
-			  };
-			}
+	        }
 	    });
 	    
 	    $('.context-menu-one').on('click', function(e){
@@ -213,6 +205,71 @@ require(["custom/module-tabs",
             buttons : {'OK' : {'class' : 'btn-primary'}}
         });
     }
+
+    var rename_notebook = function (nbname) {
+		var that = this;
+        if (!nbname.match(/\.ipynb$/)) {
+            nbname = nbname + ".ipynb";
+        }
+        var data = {name: nbname};
+        var settings = {
+            processData : false,
+            cache : false,
+            type : "PATCH",
+            data : JSON.stringify(data),
+            dataType: "json",
+            headers : {'Content-Type': 'application/json'},
+            success : $.proxy(that.rename_success, this),
+            error : $.proxy(that.rename_error, this)
+        };
+        $([IPython.events]).trigger('rename_notebook.Notebook', data);
+        var url = utils.url_join_encode(
+            this.base_url,
+            'api/notebooks',
+            this.notebook_path,
+            this.notebook_name
+        );
+        $.ajax(url, settings);    	
+    }
+
+	var rename_success = function (json, status, xhr) {
+        var name = this.notebook_name = json.name;
+        var path = json.path;
+        this.session.rename_notebook(name, path);
+        $([IPython.events]).trigger('notebook_renamed.Notebook', json);
+    };
+
+    var rename_error = function (xhr, status, error) {
+        var that = this;
+        var dialog = $('<div/>').append(
+            $("<p/>").addClass("rename-message")
+            .text('This notebook name already exists.')
+        );
+        $([IPython.events]).trigger('notebook_rename_failed.Notebook', [xhr, status, error]);
+        IPython.dialog.modal({
+            title: "Notebook Rename Error!",
+            body: dialog,
+            buttons : {
+                "Cancel": {},
+                "OK": {
+                    class: "btn-primary",
+                    click: function () {
+                        IPython.save_widget.rename_notebook();
+                }}
+                },
+            open : function (event, ui) {
+                var that = $(this);
+                // Upon ENTER, click the OK button.
+                that.find('input[type="text"]').keydown(function (event, ui) {
+                    if (event.which === IPython.keyboard.keycodes.enter) {
+                        that.find('.btn-primary').first().click();
+                    }
+                });
+                that.find('input[type="text"]').focus();
+            }
+        });
+    };
+
 //});
 });
 
