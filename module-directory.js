@@ -1,6 +1,9 @@
 
 var nbname = '';
 var session = {};
+var sessions = {};
+
+IPython.sessions = {};
 
 ;(function () {
 require(["custom/module-tabs", 
@@ -9,12 +12,26 @@ require(["custom/module-tabs",
 		'custom/jquery.treeview',
 		'custom/jquery.treeview.async',
 		'custom/jquery.ui.position',
-		'custom/jquery.contextMenu'
+		'custom/jquery.contextMenu',
+		'tree/js/sessionlist',
 		], 
 		function (events) {
 
 	'use strict';
 	window.console && console.log('custom module loaded');
+
+	var opts = {
+        base_url : IPython.utils.get_body_data("baseUrl"),
+        notebook_path : IPython.utils.get_body_data("notebookPath"),
+    };
+    IPython.session_list = new IPython.SesssionList(opts);
+    IPython.session_list.load_sessions();
+
+    $([IPython.events]).on('sessions_loaded.Dashboard', 
+            function(e, d) {
+        this.sessions = d;
+        IPython.sessions = d;
+	});
 
    	var list_loaded = function (data, status, xhr, param) {
    		
@@ -73,8 +90,8 @@ require(["custom/module-tabs",
 	        items: {
 	            "delete": {name: "Delete", icon: "delete"},
 	            "add": {name: "Add", icon: "add"},
-	            //"rename": {name: "Rename", icon: "quit"},
-	            //"shutdown": {name: "Shutdown", icon: "quit"}
+	            "rename": {name: "Rename", icon: "quit"},
+	            "shutdown": {name: "Shutdown", icon: "quit"}
 	        }
 	    });
 	    
@@ -114,11 +131,8 @@ require(["custom/module-tabs",
 	                        return false;
 	                    } else {
 	                        IPython.notebook.rename(new_name);
-	                        var anchor = x.find('.file[href="' + nbname +　'"]');
-	        				anchor.append('<a></a>')
-	        					.attr('href', new_name + '.ipynb')
-	        					.html('href', new_name + '.ipynb')
-	        					.remove();
+	                        x.find('.file').find('a').remove();
+	        				$('<a></a>').attr('href', new_name + '.ipynb').appendTo(x.find('.file'))
 	                    }
 	                }}
 	                },
@@ -158,13 +172,14 @@ require(["custom/module-tabs",
 	$.ajax(url, settings);
 
 	var shutdown_notebook = function () {
+		var session = IPython.sessions[nbname];
         var settings = {
             processData : false,
             cache : false,
             type : "DELETE",
             dataType : "json",
             success : function () {
-                that.load_sessions();
+                //that.load_sessions();
             },
             error : utils.log_ajax_error,
         };
