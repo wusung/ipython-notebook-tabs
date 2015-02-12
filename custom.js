@@ -14,7 +14,8 @@ require(["base/js/events"], function (events) {
 });
 
 
-require(["custom/module-directory"], 
+require(["custom/module-directory",
+		'custom/module-multiplecheckpointsxx'], 
 function (events) {
 
 });
