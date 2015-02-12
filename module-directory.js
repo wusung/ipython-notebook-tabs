@@ -132,7 +132,8 @@ require(["custom/module-tabs",
 	                    } else {
 	                        IPython.notebook.rename(new_name);
 	                        x.find('.file').find('a').remove();
-	        				$('<a></a>').attr('href', new_name + '.ipynb').appendTo(x.find('.file'))
+	        				$('<a>' + new_name + '.ipynb' + '</a>').attr('href', new_name + '.ipynb')
+	        					.appendTo(x.find('.file'))
 	                    }
 	                }}
 	                },
