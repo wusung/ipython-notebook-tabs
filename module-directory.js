@@ -109,7 +109,7 @@ require(["custom/module-tabs",
 	            $("<br/>")
 	        ).append(
 	            $('<input/>').attr('type','text').attr('size','25')
-	            .val(IPython.notebook.get_notebook_name())
+	            	.val(nbname.substring(0,nbname.length-6))
 	        );
 
 	        var x = $(container);
