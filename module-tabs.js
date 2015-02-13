@@ -202,6 +202,10 @@ $([IPython.events]).on('notebook_loading.Notebook', function() {
         inner_cell.append(input_area).append(render_area);
         cell.append(inner_cell);
         this.element = cell;
+
+        if (Custom.content.worksheets.length == 0) {  
+            $('#div.cell').appendTo('#tab-content');
+        }
     };
 });
 
@@ -276,6 +280,8 @@ IPython.Notebook.prototype.fromJSON = function (data) {
             .appendTo('#tab-content.tab-content')
             .addClass('tabs-tab-pane');
         }
+
+        $('.end_space').appendTo('#nav-content-' + j);
         
         var worksheet = content.worksheets[j];
         if (worksheet !== undefined) {

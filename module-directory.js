@@ -18,7 +18,7 @@ require(["custom/module-tabs",
 		function (events) {
 
 	'use strict';
-	window.console && console.log('custom module loaded');
+	window.console && console.log('module-directory loaded');
 
 	var opts = {
         base_url : IPython.utils.get_body_data("baseUrl"),
