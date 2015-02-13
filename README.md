@@ -16,7 +16,7 @@ require(["custom/module-directory"],
 });
 ```
 
-Load extra css definition in `~/.ipython/profile_default/static/custom/custom.css`
+3. Load extra css definition in `~/.ipython/profile_default/static/custom/custom.css`
 
 ```css
 @import url("jquery.treeview.css");
