@@ -15,3 +15,15 @@ require(["custom/module-directory"],
 
 });
 ```
+
+Load extra css definition in `~/.ipython/profile_default/static/custom/custom.css`
+
+```css
+@import url("jquery.treeview.css");
+@import url("jquery.contextMenu.css");
+
+.context-menu-item {
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+```
