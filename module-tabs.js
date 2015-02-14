@@ -14,12 +14,14 @@ var new_page = function () {
     var nextTab = $('#tab-nav.nav-tabs li').size()-1;
     if (nextTab < 0)
         nextTab = 0;
-    $('#tab-nav').append('<li class="active" id="nav-id-' + nextTab + '"><a href="#nav-content-'+nextTab+'" data-toggle="tab">Page'+nextTab+'</a></li>');
+    $('#tab-nav').append('<li class="active" id="nav-id-' + nextTab + 
+        '"><a href="#nav-content-'+nextTab+
+        '" data-toggle="tab" class="page-a">Page'+nextTab+'</a></li>');
     $('#tab-content').append('<div class="tab-pane tabs-tab-pane active" id="nav-content-'+nextTab+'"></div>');
     $("#new-page").appendTo('#tab-nav');
     
-    $('a[data-toggle="tab"]').off('shown.bs.tab');
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    $('.page-a').off('shown.bs.tab');
+    $('.page-a').on('shown.bs.tab', function (e) {
         
         $('.end_space').appendTo(e.target.hash);
         Custom.worksheetIndex = e.target.hash.replace('#nav-content-', '');
@@ -31,7 +33,7 @@ var new_page = function () {
         $('.unrendered').remove();
     });
 
-    $('#tab-nav').find('a[data-toggle="tab"]').click(function () {
+    $('#tab-nav').find('.page-a').click(function () {
         $(this).attr('contenteditable', 'true');
         IPython.keyboard_manager.disable();
     })
@@ -57,10 +59,10 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
         if (worksheet.name === undefined)
             sheet_name = 'Page ' + i;
         if (i==0)
-            $('<li class="active"><a href="#nav-content-' + i + '" data-toggle="tab">' + sheet_name + '</a></li>')
+            $('<li class="active"><a href="#nav-content-' + i + '" data-toggle="tab" class="page-a">' + sheet_name + '</a></li>')
                 .appendTo('#tab-nav');
         else
-            $('<li><a href="#nav-content-' + i + '" data-toggle="tab">' + sheet_name + '</a></li>')
+            $('<li><a href="#nav-content-' + i + '" data-toggle="tab" class="page-a">' + sheet_name + '</a></li>')
                 .appendTo('#tab-nav');
                 
         $('.cell[wsid=' + i + ']').appendTo('#nav-content-' + i);
@@ -92,12 +94,15 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
     $("#new-page").click(function(e) {
         //var nextTab = $('.nav-tabs li').size()+1;
         var nextTab = $('#tab-nav.nav-tabs li').size()-1;
-        $('#tab-nav').append('<li id="nav-id-' + nextTab + '"><a href="#nav-content-'+nextTab+'" data-toggle="tab">Page'+nextTab+'</a></li>');
+        $('#tab-nav').append('<li id="nav-id-' + nextTab + 
+            '"><a href="#nav-content-'+nextTab+
+            '" data-toggle="tab" class="page-a">Page'+nextTab+
+            '</a></li>');
         $('#tab-content').append('<div class="tab-pane tabs-tab-pane" id="nav-content-'+nextTab+'"></div>');
         $("#new-page").appendTo('#tab-nav');
         
-        $('a[data-toggle="tab"]').off('shown.bs.tab');
-        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        $('.page-a').off('shown.bs.tab');
+        $('.page-a').on('shown.bs.tab', function (e) {
             
             $('.end_space').appendTo(e.target.hash);
             Custom.worksheetIndex = e.target.hash.replace('#nav-content-', '');
@@ -109,7 +114,7 @@ $([IPython.events]).on('notebook_loaded.Notebook', function() {
             $('.unrendered').remove();
         });
 
-        $('#tab-nav').find('a[data-toggle="tab"]').click(function () {
+        $('#tab-nav').find('.page-a').click(function () {
             $(this).attr('contenteditable', 'true');
             IPython.keyboard_manager.disable();
         })
