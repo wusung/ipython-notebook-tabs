@@ -6,13 +6,13 @@ var sessions = {};
 IPython.sessions = {};
 
 ;(function () {
-require(["custom/module-tabs", 
-		"custom/module-sidebar",
-		'custom/jquery.cookie',
-		'custom/jquery.treeview',
-		'custom/jquery.treeview.async',
-		'custom/jquery.ui.position',
-		'custom/jquery.contextMenu',
+require(["/nbextensions/dir-tabs/module-tabs.js", 
+		"/nbextensions/module-sidebar/module-sidebar.js",
+		'/nbextensions/dir-tabs/jquery.cookie.js',
+		'/nbextensions/dir-tabs/jquery-treeview/jquery.treeview.js',
+		'/nbextensions/dir-tabs/jquery-treeview/jquery.treeview.async.js',
+		'/nbextensions/dir-tabs/jquery-contextMenu/jquery.contextMenu.js',
+		'/nbextensions/dir-tabs/jquery-contextMenu/jquery.ui.position.js',
 		'tree/js/sessionlist',
 		], 
 		function (events) {
@@ -39,7 +39,7 @@ require(["custom/module-tabs",
 
     	if (len > 0) {
     		$('<ul id="directory-tree" class="filetree"></ul>')
-    			.appendTo('#directory.tab-pane');
+    			.appendTo('#sidebar-dir.tab-pane');
     	}
     	for (var i=0; i<len; i++) {
 			var item = data[len];
@@ -159,12 +159,12 @@ require(["custom/module-tabs",
         dataType : "json",
         success : $.proxy(list_loaded, this),
         error : $.proxy( function(xhr, status, error){
-            utils.log_ajax_error(xhr, status, error);
+            IPython.utils.log_ajax_error(xhr, status, error);
             list_loaded([], null, null, {msg:"Error connecting to server."});
                          },this)
     };
 
-    var url = utils.url_join_encode(
+    var url = IPython.utils.url_join_encode(
                 '/',
                 'api',
                 'notebooks'
@@ -182,9 +182,9 @@ require(["custom/module-tabs",
             success : function () {
                 //that.load_sessions();
             },
-            error : utils.log_ajax_error,
+            error : IPython.utils.log_ajax_error,
         };
-        var url = utils.url_join_encode(
+        var url = IPython.utils.url_join_encode(
             '/',
             'api/sessions',
             session
@@ -215,9 +215,9 @@ require(["custom/module-tabs",
 				                //parent_item.remove();
 				                $('a[href="' + nbname + '"').parent().parent().remove();
 				            },
-				            error : utils.log_ajax_error,
+				            error : IPython.utils.log_ajax_error,
 				        };
-				        var url = utils.url_join_encode(
+				        var url = IPython.utils.url_join_encode(
 				            '/',
 				            'api/notebooks',
 				            "",
@@ -242,7 +242,7 @@ require(["custom/module-tabs",
             async : false,
             success : function (data, status, xhr) {
                 var notebook_name = data.name;
-                window.location.replace(utils.url_join_encode(
+                window.location.replace(IPython.utils.url_join_encode(
                         base_url,
                         'notebooks',
                         path,
@@ -250,7 +250,7 @@ require(["custom/module-tabs",
             },
             error : $.proxy(new_notebook_failed, this),
         };
-        var url = utils.url_join_encode(
+        var url = IPython.utils.url_join_encode(
             base_url,
             'api/notebooks',
             path
@@ -259,7 +259,7 @@ require(["custom/module-tabs",
     };
 
     var new_notebook_failed = function (xhr, status, error) {
-        utils.log_ajax_error(xhr, status, error);
+        IPython.utils.log_ajax_error(xhr, status, error);
         var msg;
         if (xhr.responseJSON && xhr.responseJSON.message) {
             msg = xhr.responseJSON.message;
