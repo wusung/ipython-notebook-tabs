@@ -6,12 +6,12 @@ var sessions = {};
 IPython.sessions = {};
 
 ;(function () {
-require(["/nbextensions/module-sidebar/module-sidebar.js",
-		'/nbextensions/dir-tabs/jquery.cookie.js',
-		'/nbextensions/dir-tabs/jquery-treeview/jquery.treeview.js',
-		'/nbextensions/dir-tabs/jquery-treeview/jquery.treeview.async.js',
-		'/nbextensions/dir-tabs/jquery-contextMenu/jquery.contextMenu.js',
-		'/nbextensions/dir-tabs/jquery-contextMenu/jquery.ui.position.js',
+require(["../nbextensions/module-sidebar/module-sidebar.js",
+		'../nbextensions/dir-tabs/jquery.cookie.js',
+		'../nbextensions/dir-tabs/jquery-treeview/jquery.treeview.js',
+		'../nbextensions/dir-tabs/jquery-treeview/jquery.treeview.async.js',
+		'../nbextensions/dir-tabs/jquery-contextMenu/jquery.contextMenu.js',
+		'../nbextensions/dir-tabs/jquery-contextMenu/jquery.ui.position.js',
 		'tree/js/sessionlist',
 		], 
 		function (events) {
@@ -166,7 +166,7 @@ require(["/nbextensions/module-sidebar/module-sidebar.js",
     };
 
     var url = IPython.utils.url_join_encode(
-                '/',
+                '../',
                 'api',
                 'notebooks'
         );
@@ -186,7 +186,7 @@ require(["/nbextensions/module-sidebar/module-sidebar.js",
             error : IPython.utils.log_ajax_error,
         };
         var url = IPython.utils.url_join_encode(
-            '/',
+            '../',
             'api/sessions',
             session
         );
@@ -219,7 +219,7 @@ require(["/nbextensions/module-sidebar/module-sidebar.js",
 				            error : IPython.utils.log_ajax_error,
 				        };
 				        var url = IPython.utils.url_join_encode(
-				            '/',
+				            '../',
 				            'api/notebooks',
 				            "",
 				            nbname
