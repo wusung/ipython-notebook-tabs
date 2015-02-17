@@ -6,8 +6,7 @@ var sessions = {};
 IPython.sessions = {};
 
 ;(function () {
-require(["/nbextensions/dir-tabs/module-tabs.js", 
-		"/nbextensions/module-sidebar/module-sidebar.js",
+require(["/nbextensions/module-sidebar/module-sidebar.js",
 		'/nbextensions/dir-tabs/jquery.cookie.js',
 		'/nbextensions/dir-tabs/jquery-treeview/jquery.treeview.js',
 		'/nbextensions/dir-tabs/jquery-treeview/jquery.treeview.async.js',
