@@ -19,6 +19,8 @@ require(["/nbextensions/dir-tabs/module-tabs.js",
 
 	'use strict';
 	window.console && console.log('module-directory loaded');
+	var ext_path = '../nbextensions/dir-tabs';
+	$("head").append($("<link rel='stylesheet' href='" + ext_path + "/module-directory.css' type='text/css' />"));
 
 	var opts = {
         base_url : IPython.utils.get_body_data("baseUrl"),

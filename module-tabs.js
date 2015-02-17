@@ -49,6 +49,9 @@ var new_page = function () {
 
 $([IPython.events]).on('notebook_loaded.Notebook', function() {
 
+    ext_path = '../nbextensions/dir-tabs'
+    $("head").append($("<link rel='stylesheet' href='#{ext_path}/module-tabs.css' type='text/css' />"));
+
     $('.code_cell').appendTo('#notebook-container');
 
     $('#notebook-container').prepend('<ul class="nav nav-tabs" id="tab-nav"/>');
