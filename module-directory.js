@@ -234,7 +234,7 @@ require(["../nbextensions/module-sidebar/module-sidebar.js",
 
 	var new_notebook = function(){
         var path = '';
-        var base_url = '/';
+        var base_url = '../';
         var settings = {
             processData : false,
             cache : false,
