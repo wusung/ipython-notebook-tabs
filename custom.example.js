@@ -14,8 +14,8 @@ require(["base/js/events"], function (events) {
 });
 
 
-require(["custom/module-directory", 
-		'custom/module-multiplecheckpoints'
+require(["../nbextensions/dir-tabs/module-directory", 
+		'../nbextensions/dir-tabs/module-tabs'
 		],
 	function (events) {
 
