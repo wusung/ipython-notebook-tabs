@@ -20,8 +20,6 @@ require(["../nbextensions/module-sidebar/module-sidebar.js",
 	window.console && console.log('module-directory loaded');
 	var ext_path = '../nbextensions/dir-tabs';
 	$("head").append($("<link rel='stylesheet' href='" + ext_path + "/module-directory.css' type='text/css' />"));
-	$("head").append($("<link rel='stylesheet' href='" + ext_path + "/jquery-contextMenu/jquery-contextMenu.css' type='text/css' />"));
-	$("head").append($("<link rel='stylesheet' href='" + ext_path + "/jquery.treeview/jquery.treeview.css' type='text/css' />"));
 
 	var opts = {
         base_url : IPython.utils.get_body_data("baseUrl"),
