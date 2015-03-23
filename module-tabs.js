@@ -174,22 +174,34 @@ $([IPython.events]).on('notebook_loading.Notebook', function() {
     /** @method create_element */
     IPython.CodeCell.prototype.create_element = function () {
         IPython.Cell.prototype.create_element.apply(this, arguments);
-    
-        var cell =  $('<div></div>').addClass('cell border-box-sizing code_cell');
+      
+        var that = this;
+
+        var cell =  $('<div></div>').addClass('cell code_cell');
         cell.attr('tabindex','2');
         cell.attr('wsId', Custom.worksheetIndex);
-    
+
         var input = $('<div></div>').addClass('input');
         var prompt = $('<div/>').addClass('prompt input_prompt');
         var inner_cell = $('<div/>').addClass('inner_cell');
-        this.celltoolbar = new IPython.CellToolbar(this);
+        this.celltoolbar = new IPython.CellToolbar({
+            cell: this, 
+            notebook: this.notebook});
         inner_cell.append(this.celltoolbar.element);
         var input_area = $('<div/>').addClass('input_area');
-        this.code_mirror = CodeMirror(input_area.get(0), this.cm_config);
+        this.code_mirror = new CodeMirror(input_area.get(0), this.cm_config);
+        // In case of bugs that put the keyboard manager into an inconsistent state,
+        // ensure KM is enabled when CodeMirror is focused:
+        this.code_mirror.on('focus', function () {
+            if (that.keyboard_manager) {
+                that.keyboard_manager.enable();
+            }
+        });
+        this.code_mirror.on('keydown', $.proxy(this.handle_keyevent,this));
         $(this.code_mirror.getInputField()).attr("spellcheck", "false");
         inner_cell.append(input_area);
         input.append(prompt).append(inner_cell);
-    
+
         var widget_area = $('<div/>')
             .addClass('widget-area')
             .hide();
@@ -201,20 +213,42 @@ $([IPython.events]).on('notebook_loading.Notebook', function() {
             .addClass('widget-subarea')
             .appendTo(widget_area);
         this.widget_subarea = widget_subarea;
+        var that = this;
         var widget_clear_buton = $('<button />')
             .addClass('close')
             .html('&times;')
             .click(function() {
-                widget_area.slideUp('', function(){ widget_subarea.html(''); });
-                })
+                widget_area.slideUp('', function(){ 
+                    for (var i = 0; i < that.widget_views.length; i++) {
+                        var view = that.widget_views[i];
+                        view.remove();
+
+                        // Remove widget live events.
+                        view.off('comm:live', that._widget_live);
+                        view.off('comm:dead', that._widget_dead);
+                    }
+                    that.widget_views = [];
+                    widget_subarea.html(''); 
+                });
+            })
             .appendTo(widget_prompt);
-    
+
         var output = $('<div></div>');
         cell.append(input).append(widget_area).append(output);
         this.element = cell;
-        this.output_area = new IPython.OutputArea(output, true);
-        this.completer = new IPython.Completer(this);
+        this.output_area = new IPython.OutputArea({
+            selector: output, 
+            prompt_area: true, 
+            events: this.events, 
+            keyboard_manager: this.keyboard_manager});
+        this.completer = new IPython.Completer(this, this.events);
 
+        if (Custom.content === undefined) {
+            Custom.content = {
+                worksheets: []
+            };
+        }
+        
         if (Custom.content.worksheets.length == 0) {  
             $('#div.cell').appendTo('#tab-content');
         }
@@ -374,6 +408,10 @@ var get_all_cells = function() {
  */
 if (IPython.Notebook !== undefined) 
 IPython.Notebook.prototype.toJSON = function () {
+
+    delete this.metadata.orig_nbformat;
+    delete this.metadata.orig_nbformat_minor;
+
     var cells = get_all_cells();
     var ncells = cells.length;
     var cell_array = new Array(ncells);
@@ -406,7 +444,9 @@ IPython.Notebook.prototype.toJSON = function () {
 
     var data = {
         worksheets : worksheets,
-        metadata : this.metadata
+        metadata : this.metadata,
+        nbformat: this.nbformat,
+        nbformat_minor: this.nbformat_minor
     };
     
     if (trusted != this.trusted) {
