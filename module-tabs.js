@@ -5,7 +5,6 @@
 // Distributed under the terms of the Modified BSD License.
 
 var Custom = {};
-var currentTab = null;
 
 $([IPython.events]).on('create.Cell', function(cell, index) {
 
@@ -13,9 +12,8 @@ $([IPython.events]).on('create.Cell', function(cell, index) {
 
 define(function (require) {
     "use strict";
-    require(['base/js/namespace',
-             'notebook/js/notebook'],
-    function (IPython, notebook) {
+    var IPython = require('base/js/namespace');
+    var notebook = require('notebook/js/notebook');
             
     var new_page = function () {
         var nextTab = $('#tab-nav.nav-tabs li').size()-1;
@@ -43,7 +41,6 @@ define(function (require) {
 
         $('#tab-nav').find('.page-a').click(function (e) {
             e.preventDefault();
-            currentTab = $(this);
 
             $(this).attr('contenteditable', 'true');
             IPython.keyboard_manager.disable();
@@ -191,7 +188,7 @@ define(function (require) {
             var input = $('<div></div>').addClass('input');
             var prompt = $('<div/>').addClass('prompt input_prompt');
             var inner_cell = $('<div/>').addClass('inner_cell');
-            this.celltoolbar = new IPython.CellToolbar({
+            this.celltoolbar = new celltoolbar.CellToolbar({
                 cell: this, 
                 notebook: this.notebook});
             inner_cell.append(this.celltoolbar.element);
@@ -243,12 +240,12 @@ define(function (require) {
             var output = $('<div></div>');
             cell.append(input).append(widget_area).append(output);
             this.element = cell;
-            this.output_area = new IPython.OutputArea({
+            this.output_area = new outputarea.OutputArea({
                 selector: output, 
                 prompt_area: true, 
                 events: this.events, 
                 keyboard_manager: this.keyboard_manager});
-            this.completer = new IPython.Completer(this, this.events);
+            this.completer = new completer.Completer(this, this.events);
 
             if (Custom.content === undefined) {
                 Custom.content = {
@@ -267,29 +264,41 @@ define(function (require) {
          * @private
          */
         IPython.TextCell.prototype.create_element = function () {
-            IPython.Cell.prototype.create_element.apply(this, arguments);
 
-            var cell = $("<div>").addClass('cell text_cell border-box-sizing');
+            Cell.prototype.create_element.apply(this, arguments);
+            var that = this;
+
+            var cell = $("<div>").addClass('cell text_cell');
             cell.attr('tabindex','2');
             cell.attr('wsId', Custom.worksheetIndex);
 
             var prompt = $('<div/>').addClass('prompt input_prompt');
             cell.append(prompt);
             var inner_cell = $('<div/>').addClass('inner_cell');
-            this.celltoolbar = new IPython.CellToolbar(this);
+            this.celltoolbar = new celltoolbar.CellToolbar({
+                cell: this, 
+                notebook: this.notebook});
             inner_cell.append(this.celltoolbar.element);
             var input_area = $('<div/>').addClass('input_area');
             this.code_mirror = new CodeMirror(input_area.get(0), this.cm_config);
+            // In case of bugs that put the keyboard manager into an inconsistent state,
+            // ensure KM is enabled when CodeMirror is focused:
+            this.code_mirror.on('focus', function () {
+                if (that.keyboard_manager) {
+                    that.keyboard_manager.enable();
+                }
+            });
+            this.code_mirror.on('keydown', $.proxy(this.handle_keyevent,this))
             // The tabindex=-1 makes this div focusable.
-            var render_area = $('<div/>').addClass('text_cell_render border-box-sizing').
-                addClass('rendered_html').attr('tabindex','-1');
+            var render_area = $('<div/>').addClass('text_cell_render rendered_html')
+                .attr('tabindex','-1');
             inner_cell.append(input_area).append(render_area);
             cell.append(inner_cell);
-            this.element = cell;
+            this.element = cell;   
 
-            if (Custom.content.worksheets.length == 0) {  
+             if (Custom.content.worksheets.length == 0) {  
                 $('#div.cell').appendTo('#tab-content');
-            }
+            }         
         };
     });
 
@@ -305,11 +314,9 @@ define(function (require) {
      */
     if (IPython.Notebook !== undefined)
     IPython.Notebook.prototype.create_elements = function () {
-
         var that = this;
         this.element.attr('tabindex','-1');
         this.container = $("<div/>").addClass("container").attr("id", "notebook-container");
-        
         // We add this end_space div to the end of the notebook div to:
         // i) provide a margin between the last cell and the end of the notebook
         // ii) to prevent the div from scrolling up when the last cell is being
@@ -320,10 +327,8 @@ define(function (require) {
             that.insert_cell_below('code',ncells-1);
         });
         this.element.append(this.container);
-        this.container.append(end_space);    
+        this.container.after(end_space);
     };
-
-
 
     /**
      * Load a notebook from JSON (.ipynb).
@@ -341,15 +346,23 @@ define(function (require) {
         var i;
         for (i=0; i<ncells; i++) {
             // Always delete cell 0 as they get renumbered as they are deleted.
-            this.delete_cell(0);
+            this._unsafe_delete_cell(0);
         }
         // Save the metadata and name.
         this.metadata = content.metadata;
         this.notebook_name = data.name;
+        this.notebook_path = data.path;
         var trusted = true;
 
-        $('<div class="tab-content" id="tab-content"/>').appendTo('#notebook-container');
+        // Set the codemirror mode from language_info metadata
+        if (this.metadata.language_info !== undefined) {
+            var langinfo = this.metadata.language_info;
+            // Mode 'null' should be plain, unhighlighted text.
+            var cm_mode = langinfo.codemirror_mode || langinfo.name || 'null';
+            this.set_codemirror_mode(cm_mode);
+        }
 
+        $('<div class="tab-content" id="tab-content"/>').appendTo('#notebook-container');
         for (var j=0; j<content.worksheets.length; j++) {
 
             if (j == 0) {
@@ -378,16 +391,10 @@ define(function (require) {
                 var new_cell = null;
                 for (i=0; i<ncells; i++) {
                     cell_data = new_cells[i];
-                    // VERSIONHACK: plaintext -> raw
-                    // handle never-released plaintext name for raw cells
-                    if (cell_data.cell_type === 'plaintext'){
-                        cell_data.cell_type = 'raw';
-                    }
-
                     Custom.worksheetIndex = j;    
                     new_cell = this.insert_cell_at_index(cell_data.cell_type, i);
                     new_cell.fromJSON(cell_data);
-                    if (new_cell.cell_type == 'code' && !new_cell.output_area.trusted) {
+                    if (new_cell.cell_type === 'code' && !new_cell.output_area.trusted) {
                         trusted = false;
                     }
                 }
@@ -395,7 +402,7 @@ define(function (require) {
                 Custom.worksheetIndex = 0;
             }
         }
-        if (trusted != this.trusted) {
+        if (trusted !== this.trusted) {
             this.trusted = trusted;
             $([IPython.events]).trigger("trust_changed.Notebook", trusted);
         }
@@ -456,9 +463,9 @@ define(function (require) {
             nbformat_minor: this.nbformat_minor
         };
         
-        if (trusted != this.trusted) {
+        if (trusted !== this.trusted) {
             this.trusted = trusted;
-            $([IPython.events]).trigger("trust_changed.Notebook", trusted);
+            this.events.trigger("trust_changed.Notebook", trusted);
         }
         return data;
     }; 
@@ -479,6 +486,35 @@ define(function (require) {
             }
         }
     };
+    
+    if (IPython.Notebook !== undefined)
+    IPython.Notebook.prototype._insert_element_at_index = function(element, index){
+        if (element === undefined){
+            return false;
+        }
 
-    });
+        var ncells = this.ncells();
+
+        if (ncells === 0) {
+            // special case append if empty
+            //this.container.append(element);
+            this.element.find('div.end_space').before(element);
+        } else if ( ncells === index ) {
+            // special case append it the end, but not empty
+            this.get_cell_element(index-1).after(element);
+        } else if (this.is_valid_cell_index(index)) {
+            // otherwise always somewhere to append to
+            this.get_cell_element(index).before(element);
+        } else {
+            return false;
+        }
+
+        if (this.undelete_index !== null && index <= this.undelete_index) {
+            this.undelete_index = this.undelete_index + 1;
+            this.set_dirty(true);
+        }
+        return true;
+    };    
+
+//    });
 });
