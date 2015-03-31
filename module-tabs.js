@@ -14,7 +14,11 @@ define(function (require) {
     "use strict";
     var IPython = require('base/js/namespace');
     var notebook = require('notebook/js/notebook');
-            
+    var celltoolbar = require('notebook/js/celltoolbar');
+    var outputarea = require('notebook/js/outputarea');
+    var completer = require('notebook/js/completer');
+        
+
     var new_page = function () {
         var nextTab = $('#tab-nav.nav-tabs li').size()-1;
         if (nextTab < 0)
@@ -175,131 +179,7 @@ define(function (require) {
 
     $([IPython.events]).on('notebook_loading.Notebook', function() {
 
-        /** @method create_element */
-        IPython.CodeCell.prototype.create_element = function () {
-            IPython.Cell.prototype.create_element.apply(this, arguments);
-          
-            var that = this;
-
-            var cell =  $('<div></div>').addClass('cell code_cell');
-            cell.attr('tabindex','2');
-            cell.attr('wsId', Custom.worksheetIndex);
-
-            var input = $('<div></div>').addClass('input');
-            var prompt = $('<div/>').addClass('prompt input_prompt');
-            var inner_cell = $('<div/>').addClass('inner_cell');
-            this.celltoolbar = new celltoolbar.CellToolbar({
-                cell: this, 
-                notebook: this.notebook});
-            inner_cell.append(this.celltoolbar.element);
-            var input_area = $('<div/>').addClass('input_area');
-            this.code_mirror = new CodeMirror(input_area.get(0), this.cm_config);
-            // In case of bugs that put the keyboard manager into an inconsistent state,
-            // ensure KM is enabled when CodeMirror is focused:
-            this.code_mirror.on('focus', function () {
-                if (that.keyboard_manager) {
-                    that.keyboard_manager.enable();
-                }
-            });
-            this.code_mirror.on('keydown', $.proxy(this.handle_keyevent,this));
-            $(this.code_mirror.getInputField()).attr("spellcheck", "false");
-            inner_cell.append(input_area);
-            input.append(prompt).append(inner_cell);
-
-            var widget_area = $('<div/>')
-                .addClass('widget-area')
-                .hide();
-            this.widget_area = widget_area;
-            var widget_prompt = $('<div/>')
-                .addClass('prompt')
-                .appendTo(widget_area);
-            var widget_subarea = $('<div/>')
-                .addClass('widget-subarea')
-                .appendTo(widget_area);
-            this.widget_subarea = widget_subarea;
-            var that = this;
-            var widget_clear_buton = $('<button />')
-                .addClass('close')
-                .html('&times;')
-                .click(function() {
-                    widget_area.slideUp('', function(){ 
-                        for (var i = 0; i < that.widget_views.length; i++) {
-                            var view = that.widget_views[i];
-                            view.remove();
-
-                            // Remove widget live events.
-                            view.off('comm:live', that._widget_live);
-                            view.off('comm:dead', that._widget_dead);
-                        }
-                        that.widget_views = [];
-                        widget_subarea.html(''); 
-                    });
-                })
-                .appendTo(widget_prompt);
-
-            var output = $('<div></div>');
-            cell.append(input).append(widget_area).append(output);
-            this.element = cell;
-            this.output_area = new outputarea.OutputArea({
-                selector: output, 
-                prompt_area: true, 
-                events: this.events, 
-                keyboard_manager: this.keyboard_manager});
-            this.completer = new completer.Completer(this, this.events);
-
-            if (Custom.content === undefined) {
-                Custom.content = {
-                    worksheets: []
-                };
-            }
-            
-            if (Custom.content.worksheets.length == 0) {  
-                $('#div.cell').appendTo('#tab-content');
-            }
-        };        
         
-        /**
-         * Create the DOM element of the TextCell
-         * @method create_element
-         * @private
-         */
-        IPython.TextCell.prototype.create_element = function () {
-
-            Cell.prototype.create_element.apply(this, arguments);
-            var that = this;
-
-            var cell = $("<div>").addClass('cell text_cell');
-            cell.attr('tabindex','2');
-            cell.attr('wsId', Custom.worksheetIndex);
-
-            var prompt = $('<div/>').addClass('prompt input_prompt');
-            cell.append(prompt);
-            var inner_cell = $('<div/>').addClass('inner_cell');
-            this.celltoolbar = new celltoolbar.CellToolbar({
-                cell: this, 
-                notebook: this.notebook});
-            inner_cell.append(this.celltoolbar.element);
-            var input_area = $('<div/>').addClass('input_area');
-            this.code_mirror = new CodeMirror(input_area.get(0), this.cm_config);
-            // In case of bugs that put the keyboard manager into an inconsistent state,
-            // ensure KM is enabled when CodeMirror is focused:
-            this.code_mirror.on('focus', function () {
-                if (that.keyboard_manager) {
-                    that.keyboard_manager.enable();
-                }
-            });
-            this.code_mirror.on('keydown', $.proxy(this.handle_keyevent,this))
-            // The tabindex=-1 makes this div focusable.
-            var render_area = $('<div/>').addClass('text_cell_render rendered_html')
-                .attr('tabindex','-1');
-            inner_cell.append(input_area).append(render_area);
-            cell.append(inner_cell);
-            this.element = cell;   
-
-             if (Custom.content.worksheets.length == 0) {  
-                $('#div.cell').appendTo('#tab-content');
-            }         
-        };
     });
 
     if (IPython.Notebook !== undefined)
@@ -515,6 +395,133 @@ define(function (require) {
         }
         return true;
     };    
+
+    if (IPython.Notebook !== undefined)
+        IPython.CodeCell.prototype.create_element = function () {
+            IPython.Cell.prototype.create_element.apply(this, arguments);
+          
+            var that = this;
+
+            var cell =  $('<div></div>').addClass('cell code_cell');
+            cell.attr('tabindex','2');
+            cell.attr('wsId', Custom.worksheetIndex);
+
+            var input = $('<div></div>').addClass('input');
+            var prompt = $('<div/>').addClass('prompt input_prompt');
+            var inner_cell = $('<div/>').addClass('inner_cell');
+            this.celltoolbar = new celltoolbar.CellToolbar({
+                cell: this, 
+                notebook: this.notebook});
+            inner_cell.append(this.celltoolbar.element);
+            var input_area = $('<div/>').addClass('input_area');
+            this.code_mirror = new CodeMirror(input_area.get(0), this.cm_config);
+            // In case of bugs that put the keyboard manager into an inconsistent state,
+            // ensure KM is enabled when CodeMirror is focused:
+            this.code_mirror.on('focus', function () {
+                if (that.keyboard_manager) {
+                    that.keyboard_manager.enable();
+                }
+            });
+            this.code_mirror.on('keydown', $.proxy(this.handle_keyevent,this));
+            $(this.code_mirror.getInputField()).attr("spellcheck", "false");
+            inner_cell.append(input_area);
+            input.append(prompt).append(inner_cell);
+
+            var widget_area = $('<div/>')
+                .addClass('widget-area')
+                .hide();
+            this.widget_area = widget_area;
+            var widget_prompt = $('<div/>')
+                .addClass('prompt')
+                .appendTo(widget_area);
+            var widget_subarea = $('<div/>')
+                .addClass('widget-subarea')
+                .appendTo(widget_area);
+            this.widget_subarea = widget_subarea;
+            var that = this;
+            var widget_clear_buton = $('<button />')
+                .addClass('close')
+                .html('&times;')
+                .click(function() {
+                    widget_area.slideUp('', function(){ 
+                        for (var i = 0; i < that.widget_views.length; i++) {
+                            var view = that.widget_views[i];
+                            view.remove();
+
+                            // Remove widget live events.
+                            view.off('comm:live', that._widget_live);
+                            view.off('comm:dead', that._widget_dead);
+                        }
+                        that.widget_views = [];
+                        widget_subarea.html(''); 
+                    });
+                })
+                .appendTo(widget_prompt);
+
+            var output = $('<div></div>');
+            cell.append(input).append(widget_area).append(output);
+            this.element = cell;
+            this.output_area = new outputarea.OutputArea({
+                selector: output, 
+                prompt_area: true, 
+                events: this.events, 
+                keyboard_manager: this.keyboard_manager});
+            this.completer = new completer.Completer(this, this.events);
+
+            if (Custom.content === undefined) {
+                Custom.content = {
+                    worksheets: []
+                };
+            }
+            
+            if (Custom.content.worksheets.length == 0) {  
+                $('#div.cell').appendTo('#tab-content');
+            }
+        };        
+        
+        if (IPython.Notebook !== undefined)
+        /**
+         * Create the DOM element of the TextCell
+         * @method create_element
+         * @private
+         */
+        IPython.TextCell.prototype.create_element = function () {
+
+            Cell.prototype.create_element.apply(this, arguments);
+            var that = this;
+
+            var cell = $("<div>").addClass('cell text_cell');
+            cell.attr('tabindex','2');
+            cell.attr('wsId', Custom.worksheetIndex);
+
+            var prompt = $('<div/>').addClass('prompt input_prompt');
+            cell.append(prompt);
+            var inner_cell = $('<div/>').addClass('inner_cell');
+            this.celltoolbar = new celltoolbar.CellToolbar({
+                cell: this, 
+                notebook: this.notebook});
+            inner_cell.append(this.celltoolbar.element);
+            var input_area = $('<div/>').addClass('input_area');
+            this.code_mirror = new CodeMirror(input_area.get(0), this.cm_config);
+            // In case of bugs that put the keyboard manager into an inconsistent state,
+            // ensure KM is enabled when CodeMirror is focused:
+            this.code_mirror.on('focus', function () {
+                if (that.keyboard_manager) {
+                    that.keyboard_manager.enable();
+                }
+            });
+            this.code_mirror.on('keydown', $.proxy(this.handle_keyevent,this))
+            // The tabindex=-1 makes this div focusable.
+            var render_area = $('<div/>').addClass('text_cell_render rendered_html')
+                .attr('tabindex','-1');
+            inner_cell.append(input_area).append(render_area);
+            cell.append(inner_cell);
+            this.element = cell;   
+
+             if (Custom.content.worksheets.length == 0) {  
+                $('#div.cell').appendTo('#tab-content');
+            }         
+        };
 
 //    });
 });
