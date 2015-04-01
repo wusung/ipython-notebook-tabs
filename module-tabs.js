@@ -18,14 +18,14 @@ define(function (require) {
     var outputarea = require('notebook/js/outputarea');
     var completer = require('notebook/js/completer');
         
-
     var new_page = function () {
         var nextTab = $('#tab-nav.nav-tabs li').size()-1;
         if (nextTab < 0)
             nextTab = 0;
         $('#tab-nav').append('<li class="active" id="nav-id-' + nextTab + 
             '"><a href="#nav-content-'+nextTab+
-            '" data-toggle="tab" class="page-a">Page'+nextTab+
+            '" data-toggle="tab" class="page-a" name="Page-' + nextTab + '"' +
+            '>Page'+nextTab+
             '</a></li>');
         $('#tab-content').append('<div class="tab-pane tabs-tab-pane active" id="nav-content-'+nextTab+'"></div>');
         $("#new-page").appendTo('#tab-nav');
@@ -96,7 +96,8 @@ define(function (require) {
                     .appendTo('#tab-nav');
             }
             else {
-                $('<li><a href="#nav-content-' + i + '" data-toggle="tab" class="page-a" name="' + sheet_name + '">' + 
+                $('<li><a href="#nav-content-' + i + '" data-toggle="tab" class="page-a" name="' + sheet_name + '">' +
+                    sheet_name +  
                     '</a></li>')
                     .appendTo('#tab-nav');            
             }
@@ -116,7 +117,7 @@ define(function (require) {
         });        
         registerCloseEvent();
         
-        $("#tab-nav").append('<li id="new-page"><a href="#" class="icon-plus"></a></li>')
+        $("#tab-nav").append('<li id="new-page"><a href="#" class="glyphicon-plus"></a></li>')
             .blur(function() {
                 //$(this).attr('contenteditable', 'false');
             })
@@ -479,7 +480,7 @@ define(function (require) {
             }
         };        
         
-        if (IPython.Notebook !== undefined)
+    if (IPython.Notebook !== undefined)
         /**
          * Create the DOM element of the TextCell
          * @method create_element
@@ -522,6 +523,4 @@ define(function (require) {
                 $('#div.cell').appendTo('#tab-content');
             }         
         };
-
-//    });
 });
