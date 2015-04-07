@@ -1,4 +1,4 @@
-# IPython Notebook with Tabs (Directory)
+# IPython Notebook with Tabs
 --------------
 
 ## How to install
@@ -7,10 +7,10 @@
 To install this tabs extension, please follow these steps:
 
 1. Copy all files in the projects to `~/.ipython/profile_default/static/custom`.
-2. Load module-directory extension in your custom.js. For example: `~/.ipython/profile_default/static/custom/custom.js`
+2. Load module-tabs extension in your custom.js. For example: `~/.ipython/profile_default/static/custom/custom.js`
 	
 ```javascript
-require(["custom/module-directory"], 
+require(["custom/module-tabs"], 
         function (events) {
 
 });
