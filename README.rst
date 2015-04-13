@@ -86,6 +86,7 @@ Importing Module Tabs
 Add this to custom.js
 
 .. code-block:: javascript
+
     define(function (require) {
         "use strict";
 
