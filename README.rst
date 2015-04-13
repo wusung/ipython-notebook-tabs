@@ -1,5 +1,5 @@
-Bookstore
-=========
+IPython Notebook Module Tabs
+----------------------------
 
 .. image:: https://badge.fury.io/py/bookstore.png
    :target: http://badge.fury.io/py/bookstore
@@ -11,14 +11,7 @@ Add multiple checkpoints for IPython.
 
 *Add your provider with a pull request!*
 
-**Note: Bookstore requires IPython 1.0+**
-
-Bookstore currently has generic support for OpenStack Swift and simplified
-authentication for Rackspace's CloudFiles. Bookstore also handles IPython notebook's
-autosave/checkpoint feature and as of the latest release supports multiple checkpoints:
-
-.. image:: https://pbs.twimg.com/media/BVD3olXCMAA2rzb.png
-   :alt: Multiple checkpoints
+**Note: IPython Notebook Module Tabs requires IPython 1.0+**
 
 Once installed and configured (added to an ipython profile), just launch
 IPython notebook like normal:
@@ -39,12 +32,6 @@ Simply:
 
 .. code-block:: bash
 
-    $ pip install bookstore
-
-Alternatively, you can always pull from the master branch if you're the adventurous type:
-
-.. code-block:: bash
-
     $ pip install git+https://gitlab.com/wusung/ipython-notebook-tabs.git
 
 Installation isn't the end though. You need to configure your account details
@@ -60,37 +47,28 @@ Upgrade
 Configuration
 -------------
 
-Bookstore has to be added to an IPython profile and configured to work with
-your OpenStack provider.
-
-If you want to keep it simple, just add your configuration to the default configuration located at:
+IPython Notebook Module Tabs has to be added to an IPython profile. If you want to keep it simple, just add your configuration to the default configuration located at:
 
 .. code-block:: bash
 
     ~/.ipython/profile_default/ipython_notebook_config.py
 
-Alternatively, you can create a brand new notebook profile for bookstore:
+Alternatively, you can create a brand new notebook profile for it:
 
 .. code-block:: bash
 
-    $ ipython profile create swiftstore
-    [ProfileCreate] Generating default config file: u'/Users/theuser/.ipython/profile_swiftstore/ipython_config.py'
-    [ProfileCreate] Generating default config file: u'/Users/theuser/.ipython/profile_swiftstore/ipython_notebook_config.py'
+    $ ipython profile create nbserver
+    [ProfileCreate] Generating default config file: u'/Users/theuser/.ipython/profile_nbserver/ipython_config.py'
+    [ProfileCreate] Generating default config file: u'/Users/theuser/.ipython/profile_nbserver/ipython_notebook_config.py'
 
 When launching, just set the custom profile you want to use
 
 .. code-block:: bash
 
-    $ ipython notebook --profile=swiftstore
+    $ ipython notebook --profile=nbserver
 
-Each provider has their own setup for authentication.
-
-Using Multiple Files Manager
+Using Kyper Contents Manager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-OpenStack (generic, non provider specific) has quite a few details you'll need
-to configure, namely account name, account key, auth endpoint, and region.
-You'll possibly need a tenant id and a tenant name.
 
 Add this to your ipython notebook profile *ipython_notebook_config.py*, making
 sure it comes after the config declaration ``c = get_config()``.
@@ -105,5 +83,5 @@ sure it comes after the config declaration ``c = get_config()``.
 Contributing
 ------------
 
-Send a pull request on `GitHub <https://github.com/wusung/ipython-notebook-store>`_. It's
-that simple. More than happy to respond to issues on GitHub as well.
+Send a pull request on `Gitlab <https://gitlab.com/wusung/ipython-notebook-tabs.git>`_. It's
+that simple. More than happy to respond to issues on Gitlab as well.
