@@ -32,7 +32,7 @@ Simply:
 
 .. code-block:: bash
 
-    $ pip install git+https://gitlab.com/wusung/ipython-notebook-tabs.git
+    $ pip install git+https://git.kyper.co/wusung.peng/ipython-notebook-tabs.git
 
 Installation isn't the end though. You need to configure your account details
 as well as where you'll be storing the notebooks.
@@ -42,7 +42,7 @@ Upgrade
 
 .. code-block:: bash
 
-    $ pip install --upgrade git+https://gitlab.com/wusung/ipython-notebook-tabs.git
+    $ pip install --upgrade git+https://git.kyper.co/wusung.peng/ipython-notebook-tabs.git
 
 Configuration
 -------------
@@ -83,5 +83,5 @@ sure it comes after the config declaration ``c = get_config()``.
 Contributing
 ------------
 
-Send a pull request on `Gitlab <https://gitlab.com/wusung/ipython-notebook-tabs.git>`_. It's
-that simple. More than happy to respond to issues on Gitlab as well.
+Send a pull request on `Kyper Git <https://git.kyper.co/wusung.peng/ipython-notebook-tabs.git>`_. It's
+that simple. More than happy to respond to issues on Kyper Git as well.
