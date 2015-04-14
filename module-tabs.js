@@ -10,6 +10,8 @@ $([IPython.events]).on('create.Cell', function(cell, index) {
 
 });
 
+console.log("Loaded extension: module-tabs")
+
 define(function (require) {
     "use strict";
     var IPython = require('base/js/namespace');
