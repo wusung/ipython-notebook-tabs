@@ -19,6 +19,11 @@ define(function (require) {
     var celltoolbar = require('notebook/js/celltoolbar');
     var outputarea = require('notebook/js/outputarea');
     var completer = require('notebook/js/completer');
+
+    $([IPython.events]).on('notebook_restoring.Notebook', function() {
+       $('#notebook-container').html('');
+       var end_space = $('<div/>').addClass('end_space').appendTo('#notebook-container');
+    });    
         
     var new_page = function () {
         var nextTab = $('#tab-nav.nav-tabs li').size()-1;
