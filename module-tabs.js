@@ -59,6 +59,9 @@ define(function (require) {
         .blur(function() {
             $(this).attr('contenteditable', 'false');
             IPython.keyboard_manager.enable();
+        })
+        .on('keypress', function(e) {
+
         });
 
         $('#tab-nav').unbind('click');  
@@ -340,7 +343,8 @@ define(function (require) {
             if (worksheets[wsid].cells === undefined) {
                 worksheets[wsid].cells = [];
             }
-            worksheets[wsid]['name'] = $('a[href="#nav-content-' + wsid + '"]').attr('name');
+            worksheets[wsid]['name'] = //$('a[href="#nav-content-' + wsid + '"]').attr('name');
+                $('a[href="#nav-content-' + wsid + '"]').text().replace('x', '');
             worksheets[wsid].cells.push(cell.toJSON()); 
         }
 
