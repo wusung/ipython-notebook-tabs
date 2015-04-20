@@ -10,6 +10,7 @@ from IPython.utils import py3compat
 
 from IPython.utils.log import get_logger
 
+from . import v0
 from . import v1
 from . import v2
 from . import v3
