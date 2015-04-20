@@ -80,6 +80,19 @@ sure it comes after the config declaration ``c = get_config()``.
     # Setup IPython Notebook to support multiple checkpoints
     c.NotebookApp.contents_manager_class = 'kyper.filemanager.DefaultContentsManager'
 
+Importing Module Tabs
+~~~~~~~~~~~~~~~~~~~~~
+
+Add this to custom.js
+
+.. code-block:: javascript
+
+    define(function (require) {
+        "use strict";
+
+        require('../nbextensions/dir-tabs/module-tabs');
+    });
+
 Contributing
 ------------
 
