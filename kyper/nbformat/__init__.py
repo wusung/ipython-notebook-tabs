@@ -20,6 +20,7 @@ __all__ = ['versions', 'validate', 'ValidationError', 'convert', 'from_dict',
            'NBFormatError', 'NO_CONVERT', 'reads', 'read', 'writes', 'write']
 
 versions = {
+    0: v0,
     1: v1,
     2: v2,
     3: v3,

@@ -25,9 +25,9 @@ def cell_preprocessor(function):
         get_logger().debug(
                 "Applying preprocessor: %s", function.__name__
             )
-        for index, cell in enumerate(nb.cells):
-            nb.cells[index], resources = function(cell, resources, index)
-        return nb, resources
+        for worksheet in nb.worksheets:
+            for index, cell in enumerate(worksheet.cells):
+                worksheet.cells[index], resources = function(cell, resources, index)
     return wrappedfunc
 
 cr_pat = re.compile(r'.*\r(?=[^\n])')
