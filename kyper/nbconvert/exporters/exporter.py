@@ -275,6 +275,7 @@ class Exporter(LoggingConfigurable):
 
         print('*' * 80)
         print (nbc)
+        print('+' * 80)
         print (resc)
         #Run each preprocessor on the notebook.  Carry the output along
         #to each preprocessor
