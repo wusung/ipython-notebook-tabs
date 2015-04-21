@@ -13,7 +13,7 @@ import datetime
 
 from IPython.config.configurable import LoggingConfigurable
 from IPython.config import Config
-from IPython import nbformat
+from kyper import nbformat
 from IPython.utils.traitlets import MetaHasTraits, Unicode, List, TraitError
 from IPython.utils.importstring import import_item
 from IPython.utils import text, py3compat
@@ -65,15 +65,15 @@ class Exporter(LoggingConfigurable):
 
     _preprocessors = List()
 
-    default_preprocessors = List(['IPython.nbconvert.preprocessors.coalesce_streams',
-                                  'IPython.nbconvert.preprocessors.SVG2PDFPreprocessor',
-                                  'IPython.nbconvert.preprocessors.ExtractOutputPreprocessor',
-                                  'IPython.nbconvert.preprocessors.CSSHTMLHeaderPreprocessor',
-                                  'IPython.nbconvert.preprocessors.RevealHelpPreprocessor',
-                                  'IPython.nbconvert.preprocessors.LatexPreprocessor',
-                                  'IPython.nbconvert.preprocessors.ClearOutputPreprocessor',
-                                  'IPython.nbconvert.preprocessors.ExecutePreprocessor',
-                                  'IPython.nbconvert.preprocessors.HighlightMagicsPreprocessor'],
+    default_preprocessors = List(['kyper.nbconvert.preprocessors.coalesce_streams',
+                                  'kyper.nbconvert.preprocessors.SVG2PDFPreprocessor',
+                                  'kyper.nbconvert.preprocessors.ExtractOutputPreprocessor',
+                                  'kyper.nbconvert.preprocessors.CSSHTMLHeaderPreprocessor',
+                                  'kyper.nbconvert.preprocessors.RevealHelpPreprocessor',
+                                  'kyper.nbconvert.preprocessors.LatexPreprocessor',
+                                  'kyper.nbconvert.preprocessors.ClearOutputPreprocessor',
+                                  'kyper.nbconvert.preprocessors.ExecutePreprocessor',
+                                  'kyper.nbconvert.preprocessors.HighlightMagicsPreprocessor'],
         config=True,
         help="""List of preprocessors available by default, by name, namespace, 
         instance, or type.""")
