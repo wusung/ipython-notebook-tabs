@@ -207,14 +207,11 @@ class NbConvertApp(BaseIPythonApplication):
 
     @catch_config_error
     def initialize(self, argv=None):
-        print('nbconvertapp initialize')
         self.init_syspath()
         super(NbConvertApp, self).initialize(argv)
         self.init_notebooks()
         self.init_writer()
         self.init_postprocessor()
-
-
 
     def init_syspath(self):
         """
@@ -345,6 +342,7 @@ class NbConvertApp(BaseIPythonApplication):
 
         write_results = self.writer.write(
             output, resources, notebook_name=notebook_name)
+        print (write_results)
         return write_results
 
     def postprocess_single_notebook(self, write_results):

@@ -238,14 +238,25 @@ def downgrade(nb):
     # Validate the notebook before conversion
     _warn_if_invalid(nb, nbformat)
 
+    cells = []
+    for ws in nb.worksheets:
+        for cell in ws.cells:
+            cells.append(cell)
+
     nb.nbformat = v3.nbformat
     nb.nbformat_minor = v3.nbformat_minor
-    cells = [ downgrade_cell(cell) for cell in nb.pop('cells') ]
+    #cells = [ downgrade_cell(cell) for cell in [ ws.cells for ws in nb.worksheets ]]
+
+    # cells = []
+    # for ws in nb.worksheets:
+    #     for cell in ws.cells:
+    #         cells.append(downgrade_cell(cell))
+
     nb.worksheets = [v3.new_worksheet(cells=cells)]
     nb.metadata.setdefault('name', '')
     
     # Validate the converted notebook before returning it
-    _warn_if_invalid(nb, v3.nbformat)
+    #_warn_if_invalid(nb, v3.nbformat)
     
     nb.orig_nbformat = nb.metadata.pop('orig_nbformat', nbformat)
     nb.orig_nbformat_minor = nb.metadata.pop('orig_nbformat_minor', nbformat_minor)

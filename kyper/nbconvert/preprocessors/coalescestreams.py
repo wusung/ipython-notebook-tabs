@@ -25,6 +25,9 @@ def cell_preprocessor(function):
         get_logger().debug(
                 "Applying preprocessor: %s", function.__name__
             )
+        print (nb)
+        print ('*' * 80)
+        print (nb.worksheets)
         for worksheet in nb.worksheets:
             for index, cell in enumerate(worksheet.cells):
                 worksheet.cells[index], resources = function(cell, resources, index)

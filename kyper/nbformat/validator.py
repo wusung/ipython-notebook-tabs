@@ -68,7 +68,9 @@ def get_validator(version=None, version_minor=None):
             # no validator
             return None
         
-        schema_path = os.path.join(os.path.dirname(__file__) + '/v4/' , v.nbformat_schema)
+        #schema_path = os.path.join(os.path.dirname(__file__) + '/v4/' , v.nbformat_schema)
+        ver = v.nbformat_schema.split('.')
+        schema_path = os.path.join(os.path.dirname(__file__) + '/' + ver[1] + '/' , v.nbformat_schema)
         print(schema_path)
         with open(schema_path) as f:
             schema_json = json.load(f)
