@@ -207,6 +207,7 @@ class NbConvertApp(BaseIPythonApplication):
 
     @catch_config_error
     def initialize(self, argv=None):
+        print('nbconvertapp initialize')
         self.init_syspath()
         super(NbConvertApp, self).initialize(argv)
         self.init_notebooks()

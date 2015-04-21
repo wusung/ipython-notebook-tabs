@@ -276,5 +276,6 @@ class Exporter(LoggingConfigurable):
         #Run each preprocessor on the notebook.  Carry the output along
         #to each preprocessor
         for preprocessor in self._preprocessors:
+            print(preprocessor)
             nbc, resc = preprocessor(nbc, resc)
         return nbc, resc
