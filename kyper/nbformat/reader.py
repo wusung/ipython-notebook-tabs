@@ -57,6 +57,7 @@ def reads(s, **kwargs):
     
     nb_dict = parse_json(s, **kwargs)
     (major, minor) = get_version(nb_dict)
+
     if major in versions:
         return versions[major].to_notebook_json(nb_dict, minor=minor)
     else:

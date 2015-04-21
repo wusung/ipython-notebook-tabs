@@ -5,6 +5,8 @@
 
 from IPython.utils.py3compat import string_types, cast_unicode_py2
 
+import convert
+
 def rejoin_lines(nb):
     """rejoin multiline text into strings
     
@@ -39,7 +41,6 @@ def split_lines(nb):
     
     Used when writing JSON files.
     """
-    print(nb)
     for ws in nb.worksheets:
         for cell in ws.cells:
             source = cell.get('source', None)
@@ -47,7 +48,17 @@ def split_lines(nb):
                 cell['source'] = source.splitlines(True)
 
             if cell.cell_type == 'code':
+                cell.source = cell.get('input', '')
+            elif cell.cell_type == 'heading':
+                level = cell.get('level', 1)
+                cell.source = u'{hashes} {single_line}'.format(
+                    hashes='#' * level,
+                    single_line = ' '.join(cell.get('input', '').splitlines()),
+                )
+
+            if cell.cell_type == 'code':
                 for output in cell.outputs:
+                    output = convert.upgrade_output(output)
                     if output.output_type in {'execute_result', 'display_data'}:
                         for key, value in output.data.items():
                             if key != 'application/json' and isinstance(value, string_types):
@@ -55,6 +66,9 @@ def split_lines(nb):
                     elif output.output_type == 'stream':
                         if isinstance(output.text, string_types):
                             output.text = output.text.splitlines(True)
+
+            cell['level'] = 1
+    print(nb)
     return nb    
 
 

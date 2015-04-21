@@ -50,10 +50,13 @@ def upgrade(nb, from_version=3, from_minor=0):
         nb['cells'] = cells = []
         # In the unlikely event of multiple worksheets,
         # they will be flattened
-        for ws in nb.pop('worksheets', []):
-            # upgrade each cell
-            for cell in ws['cells']:
-                cells.append(upgrade_cell(cell))
+        # for ws in nb.pop('worksheets', []):
+        #     # upgrade each cell
+        #     for cell in ws['cells']:
+        #         cells.append(upgrade_cell(cell))
+
+        for cell in nb['cells']:
+            cells.append(upgrade_cell(cell))
         # upgrade metadata
         nb.metadata.pop('name', '')
         nb.metadata.pop('signature', '')
