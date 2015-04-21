@@ -342,7 +342,7 @@ class NbConvertApp(BaseIPythonApplication):
 
         write_results = self.writer.write(
             output, resources, notebook_name=notebook_name)
-        print (write_results)
+        self.log.info(write_results)
         return write_results
 
     def postprocess_single_notebook(self, write_results):
