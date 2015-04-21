@@ -41,36 +41,55 @@ def split_lines(nb):
     
     Used when writing JSON files.
     """
-    for ws in nb.worksheets:
-        for cell in ws.cells:
-            source = cell.get('source', None)
-            if isinstance(source, string_types):
-                cell['source'] = source.splitlines(True)
+    #self.log.info(nb.metadata.get('orig_nbformat'))
+    orig_nbformat = nb.metadata.pop('orig_nbformat', None)
+    if orig_nbformat is None:
+        for ws in nb.worksheets:
+            for cell in ws.cells:
+                source = cell.get('source', None)
+                if isinstance(source, string_types):
+                    cell['source'] = source.splitlines(True)
 
-            if cell.cell_type == 'code':
-                cell.source = cell.get('input', '')
-            elif cell.cell_type == 'heading':
-                level = cell.get('level', 1)
-                cell.source = u'{hashes} {single_line}'.format(
-                    hashes='#' * level,
-                    single_line = ' '.join(cell.get('input', '').splitlines()),
-                )
+                if cell.cell_type == 'code':
+                    for output in cell.outputs:
+                        if output.output_type in {'execute_result', 'display_data'}:
+                            for key, value in output.data.items():
+                                if key != 'application/json' and isinstance(value, string_types):
+                                    output.data[key] = value.splitlines(True)
+                        elif output.output_type == 'stream':
+                            if isinstance(output.text, string_types):
+                                output.text = output.text.splitlines(True)
 
-            if cell.cell_type == 'code':
-                for output in cell.outputs:
-                    output = convert.upgrade_output(output)
-                    if output.output_type in {'execute_result', 'display_data'}:
-                        for key, value in output.data.items():
-                            if key != 'application/json' and isinstance(value, string_types):
-                                output.data[key] = value.splitlines(True)
-                    elif output.output_type == 'stream':
-                        if isinstance(output.text, string_types):
-                            output.text = output.text.splitlines(True)
+    else:
+        for ws in nb.worksheets:
+            for cell in ws.cells:
+                source = cell.get('source', None)
+                if isinstance(source, string_types):
+                    cell['source'] = source.splitlines(True)
 
-            cell['level'] = 1
-    print(nb)
+                if cell.cell_type == 'code':
+                    cell.source = cell.get('input', '')
+                elif cell.cell_type == 'heading':
+                    level = cell.get('level', 1)
+                    cell.source = u'{hashes} {single_line}'.format(
+                        hashes='#' * level,
+                        single_line = ' '.join(cell.get('input', '').splitlines()),
+                    )
+
+                if cell.cell_type == 'code':
+                    for output in cell.outputs:
+                        output = convert.upgrade_output(output)
+                        if output.output_type in {'execute_result', 'display_data'}:
+                            for key, value in output.data.items():
+                                if key != 'application/json' and isinstance(value, string_types):
+                                    output.data[key] = value.splitlines(True)
+                        elif output.output_type == 'stream':
+                            if isinstance(output.text, string_types):
+                                output.text = output.text.splitlines(True)
+
+                cell['level'] = 1        
+        
     return nb    
-
 
 def strip_transient(nb):
     """Strip transient values that shouldn't be stored in files.
