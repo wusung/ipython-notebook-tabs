@@ -13,7 +13,7 @@ import datetime
 
 from IPython.config.configurable import LoggingConfigurable
 from IPython.config import Config
-from IPython import nbformat
+from kyper import nbformat
 from IPython.utils.traitlets import MetaHasTraits, Unicode, List, TraitError
 from IPython.utils.importstring import import_item
 from IPython.utils import text, py3compat

@@ -4,7 +4,7 @@
 # Distributed under the terms of the Modified BSD License.
 
 from .exporter import Exporter
-from IPython import nbformat
+from kyper import nbformat
 from IPython.utils.traitlets import Enum
 
 class NotebookExporter(Exporter):
