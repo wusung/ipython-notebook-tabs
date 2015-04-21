@@ -66,7 +66,11 @@ class Preprocessor(NbConvertBase):
             Additional resources used in the conversion process.  Allows
             preprocessors to pass variables into the Jinja engine.
         """
+        print ('*' * 80)
+        print (nb.worksheets)
+        print (nb)
         for worksheet in nb.worksheets:
+            print (nb.worksheets.cells)
             for index, cell in enumerate(worksheet.cells):
                 worksheet.cells[index], resources = self.preprocess_cell(cell, resources, index)
         return nb, resources
