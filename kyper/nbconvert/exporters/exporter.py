@@ -273,6 +273,9 @@ class Exporter(LoggingConfigurable):
         nbc =  copy.deepcopy(nb)
         resc = copy.deepcopy(resources)
 
+        print('*' * 80)
+        print (nbc)
+        print (resc)
         #Run each preprocessor on the notebook.  Carry the output along
         #to each preprocessor
         for preprocessor in self._preprocessors:
