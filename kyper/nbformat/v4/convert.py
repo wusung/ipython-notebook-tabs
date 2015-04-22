@@ -35,6 +35,7 @@ def upgrade(nb, from_version=3, from_minor=0):
         The original minor version of the notebook to convert (only relevant for v >= 3).
     """
     if from_version == 3:
+        get_logger().debug('*' * 80)
         # Validate the notebook before conversion
         _warn_if_invalid(nb, from_version)
 

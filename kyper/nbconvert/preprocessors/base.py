@@ -42,7 +42,6 @@ class Preprocessor(NbConvertBase):
 
        
     def __call__(self, nb, resources):
-        print ('__call__')
         if self.enabled:
             self.log.debug("Applying preprocessor: %s", self.__class__.__name__)
             return self.preprocess(nb,resources)
@@ -67,12 +66,7 @@ class Preprocessor(NbConvertBase):
             Additional resources used in the conversion process.  Allows
             preprocessors to pass variables into the Jinja engine.
         """
-        print ('*' * 80)
-        print (nb.worksheets)
-        print (nb)
-        print ('x' * 80)
         for worksheet in nb.worksheets:
-            print (nb.worksheets.cells)
             for index, cell in enumerate(worksheet.cells):
                 worksheet.cells[index], resources = self.preprocess_cell(cell, resources, index)
         return nb, resources

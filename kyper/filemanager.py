@@ -7,6 +7,7 @@ import uuid
 from tornado import web
 HTTPError = web.HTTPError
 
+from IPython.utils.log import get_logger
 from IPython.html.services.contents.filemanager import FileContentsManager
 from IPython.utils.traitlets import Unicode, Bool, TraitError
 from IPython.utils.py3compat import getcwd
@@ -28,9 +29,7 @@ from IPython.utils.traitlets import (
 
 class DefaultContentsManager(FileContentsManager):
 
-    #print("Initial keper.NotebookNotary")    
     notary = Instance(sign.NotebookNotary)
-    print(notary.__class__.__name__)
     def _notary_default(self):
         return sign.NotebookNotary(parent=self)
 

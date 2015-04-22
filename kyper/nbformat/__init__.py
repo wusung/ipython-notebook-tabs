@@ -44,7 +44,7 @@ class NBFormatError(ValueError):
 # no-conversion singleton
 NO_CONVERT = object()
 
-get_logger().error("kyper.nbformat.__init__()")
+get_logger().debug(__file__)
 
 def reads(s, as_version, **kwargs):
     """Read a notebook from a string and return the NotebookNode object as the given version.

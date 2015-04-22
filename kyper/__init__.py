@@ -14,5 +14,6 @@ __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2013 Kyle Kelley'
 
 from . import filemanager
+from IPython.utils.log import get_logger
 
-print('load kyper')
+get_logger().debug(__file__)

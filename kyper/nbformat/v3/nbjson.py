@@ -29,8 +29,6 @@ class JSONReader(NotebookReader):
         nb = json.loads(s, **kwargs)
         nb = self.to_notebook(nb, **kwargs)
         nb = strip_transient(nb)
-        print (nb)
-        print ('*' * 80)
         return nb
 
     def to_notebook(self, d, **kwargs):
