@@ -32,7 +32,7 @@ class JSONReader(NotebookReader):
 
     def to_notebook(self, d, **kwargs):
         """Convert a disk-format notebook dict to in-memory NotebookNode
-        
+
         handles multi-line values as strings, scrubbing of transient values, etc.
         """
         nb = from_dict(d)
@@ -45,8 +45,7 @@ class JSONWriter(NotebookWriter):
 
     def writes(self, nb, **kwargs):
         """Serialize a NotebookNode object as a JSON string"""
-        
-        print("JSONWRiter.writes()")
+
         kwargs['cls'] = BytesEncoder
         kwargs['indent'] = 1
         kwargs['sort_keys'] = True

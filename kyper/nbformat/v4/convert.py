@@ -34,8 +34,11 @@ def upgrade(nb, from_version=3, from_minor=0):
     from_minor : int
         The original minor version of the notebook to convert (only relevant for v >= 3).
     """
+    get_logger().debug(__file__)
+    get_logger().debug(__name__)
+
+
     if from_version == 3:
-        get_logger().debug('*' * 80)
         # Validate the notebook before conversion
         _warn_if_invalid(nb, from_version)
 
@@ -258,11 +261,11 @@ def downgrade(nb):
 
     nb.worksheets = [v3.new_worksheet(cells=cells)]
     nb.metadata.setdefault('name', '')
-    
+
     # Validate the converted notebook before returning it
     #_warn_if_invalid(nb, v3.nbformat)
-    
+
     nb.orig_nbformat = nb.metadata.pop('orig_nbformat', nbformat)
     nb.orig_nbformat_minor = nb.metadata.pop('orig_nbformat_minor', nbformat_minor)
-    
+
     return nb

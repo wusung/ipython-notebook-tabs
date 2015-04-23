@@ -6,15 +6,16 @@
 from IPython.utils.py3compat import string_types, cast_unicode_py2
 
 import convert
+from IPython.utils.log import get_logger
 
 def rejoin_lines(nb):
     """rejoin multiline text into strings
-    
+
     For reversing effects of ``split_lines(nb)``.
-    
+
     This only rejoins lines that have been split, so if text objects were not split
     they will pass through unchanged.
-    
+
     Used when reading JSON files that may have been passed through split_lines.
     """
     for ws in nb.worksheets:
@@ -35,21 +36,22 @@ def rejoin_lines(nb):
 
 def split_lines(nb):
     """split likely multiline text into lists of strings
-    
+
     For file output more friendly to line-based VCS. ``rejoin_lines(nb)`` will
     reverse the effects of ``split_lines(nb)``.
-    
+
     Used when writing JSON files.
     """
     #self.log.info(nb.metadata.get('orig_nbformat'))
     orig_nbformat = nb.metadata.pop('orig_nbformat', None)
+
+    print ("orig_nbformat=" + `orig_nbformat`)
     if orig_nbformat is None:
         for ws in nb.worksheets:
             for cell in ws.cells:
                 source = cell.get('source', None)
                 if isinstance(source, string_types):
                     cell['source'] = source.splitlines(True)
-
                 if cell.cell_type == 'code':
                     for output in cell.outputs:
                         if output.output_type in {'execute_result', 'display_data'}:
@@ -61,8 +63,10 @@ def split_lines(nb):
                                 output.text = output.text.splitlines(True)
 
     else:
+        #nb = convert.upgrade(nb, 3, 0)
         for ws in nb.worksheets:
             for cell in ws.cells:
+                cell = convert.upgrade_cell(cell)
                 source = cell.get('source', None)
                 if isinstance(source, string_types):
                     cell['source'] = source.splitlines(True)
@@ -78,7 +82,7 @@ def split_lines(nb):
 
                 if cell.cell_type == 'code':
                     for output in cell.outputs:
-                        output = convert.upgrade_output(output)
+                        #output = convert.upgrade_output(output)
                         if output.output_type in {'execute_result', 'display_data'}:
                             for key, value in output.data.items():
                                 if key != 'application/json' and isinstance(value, string_types):
@@ -87,9 +91,10 @@ def split_lines(nb):
                             if isinstance(output.text, string_types):
                                 output.text = output.text.splitlines(True)
 
-                cell['level'] = 1        
-        
-    return nb    
+                #cell['level'] = 1
+                cell.source = source
+    nb.pop('cells', None)
+    return nb
 
 def strip_transient(nb):
     """Strip transient values that shouldn't be stored in files.

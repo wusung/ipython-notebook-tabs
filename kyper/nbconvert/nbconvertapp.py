@@ -35,7 +35,7 @@ class DottedOrNone(DottedObjectName):
     """
     A string holding a valid dotted object name in Python, such as A.b3._c
     Also allows for None type."""
-    
+
     default_value = u''
 
     def validate(self, obj, value):
@@ -43,7 +43,7 @@ class DottedOrNone(DottedObjectName):
             return super(DottedOrNone, self).validate(obj, value)
         else:
             return value
-            
+
 nbconvert_aliases = {}
 nbconvert_aliases.update(base_aliases)
 nbconvert_aliases.update({
@@ -72,7 +72,7 @@ nbconvert_flags.update({
             'NbConvertApp' : {'use_output_suffix' : False},
             'FilesWriter': {'build_directory': ''}
         },
-        """Run nbconvert in place, overwriting the existing notebook (only 
+        """Run nbconvert in place, overwriting the existing notebook (only
         relevant when converting to notebook format)"""
         )
 })
@@ -84,10 +84,10 @@ class NbConvertApp(BaseIPythonApplication):
     name = 'ipython-nbconvert'
     aliases = nbconvert_aliases
     flags = nbconvert_flags
-    
+
     def _log_level_default(self):
         return logging.INFO
-    
+
     def _classes_default(self):
         classes = [NbConvertBase, ProfileDir]
         for pkg in (exporters, preprocessors, writers, postprocessors):
@@ -95,7 +95,7 @@ class NbConvertApp(BaseIPythonApplication):
                 cls = getattr(pkg, name)
                 if isinstance(cls, type) and issubclass(cls, Configurable):
                     classes.append(cls)
-        
+
         return classes
 
     description = Unicode(
@@ -109,7 +109,7 @@ class NbConvertApp(BaseIPythonApplication):
             ''')
 
     use_output_suffix = Bool(
-        True, 
+        True,
         config=True,
         help="""Whether to apply a suffix prior to the extension (only relevant
             when converting to notebook format). The suffix is determined by
@@ -117,14 +117,14 @@ class NbConvertApp(BaseIPythonApplication):
 
     examples = Unicode(u"""
         The simplest way to use nbconvert is
-        
+
         > ipython nbconvert mynotebook.ipynb
-        
+
         which will convert mynotebook.ipynb to the default format (probably HTML).
-        
+
         You can specify the export format with `--to`.
         Options include {0}
-        
+
         > ipython nbconvert --to latex mynotebook.ipynb
 
         Both HTML and LaTeX support multiple output templates. LaTeX includes
@@ -132,38 +132,38 @@ class NbConvertApp(BaseIPythonApplication):
         can specify the flavor of the format used.
 
         > ipython nbconvert --to html --template basic mynotebook.ipynb
-        
+
         You can also pipe the output to stdout, rather than a file
-        
+
         > ipython nbconvert mynotebook.ipynb --stdout
 
         PDF is generated via latex
 
         > ipython nbconvert mynotebook.ipynb --to pdf
-        
+
         You can get (and serve) a Reveal.js-powered slideshow
-        
+
         > ipython nbconvert myslides.ipynb --to slides --post serve
-        
-        Multiple notebooks can be given at the command line in a couple of 
+
+        Multiple notebooks can be given at the command line in a couple of
         different ways:
-  
+
         > ipython nbconvert notebook*.ipynb
         > ipython nbconvert notebook1.ipynb notebook2.ipynb
-        
+
         or you can specify the notebooks list in a config file, containing::
-        
+
             c.NbConvertApp.notebooks = ["my_notebook.ipynb"]
-        
+
         > ipython nbconvert --config mycfg.py
         """.format(get_export_names()))
 
     # Writer specific variables
-    writer = Instance('IPython.nbconvert.writers.base.WriterBase',  
-                      help="""Instance of the writer class used to write the 
+    writer = Instance('IPython.nbconvert.writers.base.WriterBase',
+                      help="""Instance of the writer class used to write the
                       results of the conversion.""")
-    writer_class = DottedObjectName('FilesWriter', config=True, 
-                                    help="""Writer class used to write the 
+    writer_class = DottedObjectName('FilesWriter', config=True,
+                                    help="""Writer class used to write the
                                     results of the conversion""")
     writer_aliases = {'fileswriter': 'IPython.nbconvert.writers.files.FilesWriter',
                       'debugwriter': 'IPython.nbconvert.writers.debug.DebugWriter',
@@ -176,12 +176,12 @@ class NbConvertApp(BaseIPythonApplication):
         self.writer_factory = import_item(new)
 
     # Post-processor specific variables
-    postprocessor = Instance('IPython.nbconvert.postprocessors.base.PostProcessorBase',  
-                      help="""Instance of the PostProcessor class used to write the 
+    postprocessor = Instance('IPython.nbconvert.postprocessors.base.PostProcessorBase',
+                      help="""Instance of the PostProcessor class used to write the
                       results of the conversion.""")
 
-    postprocessor_class = DottedOrNone(config=True, 
-                                    help="""PostProcessor class used to write the 
+    postprocessor_class = DottedOrNone(config=True,
+                                    help="""PostProcessor class used to write the
                                     results of the conversion""")
     postprocessor_aliases = {'serve': 'IPython.nbconvert.postprocessors.serve.ServePostProcessor'}
     postprocessor_factory = Type()
@@ -218,7 +218,7 @@ class NbConvertApp(BaseIPythonApplication):
         Add the cwd to the sys.path ($PYTHONPATH)
         """
         sys.path.insert(0, os.getcwd())
-        
+
 
     def init_notebooks(self):
         """Construct the list of notebooks.
@@ -237,8 +237,8 @@ class NbConvertApp(BaseIPythonApplication):
         # Use glob to replace all the notebook patterns with filenames.
         filenames = []
         for pattern in patterns:
-            
-            # Use glob to find matching filenames.  Allow the user to convert 
+
+            # Use glob to find matching filenames.  Allow the user to convert
             # notebooks without having to type the extension.
             globbed_files = glob.glob(pattern)
             globbed_files.extend(glob.glob(pattern + '.ipynb'))
@@ -263,7 +263,7 @@ class NbConvertApp(BaseIPythonApplication):
         """
         Initialize the postprocessor (which is stateless)
         """
-        self._postprocessor_class_changed(None, self.postprocessor_class, 
+        self._postprocessor_class_changed(None, self.postprocessor_class,
             self.postprocessor_class)
         if self.postprocessor_factory:
             self.postprocessor = self.postprocessor_factory(parent=self)
@@ -386,7 +386,8 @@ class NbConvertApp(BaseIPythonApplication):
                 """
             )
             self.exit(1)
-        
+
+        self.log.info("Starting to convert_notebooks()")
         # initialize the exporter
         self.exporter = exporter_map[self.export_format](config=self.config)
 
@@ -398,7 +399,7 @@ class NbConvertApp(BaseIPythonApplication):
         # convert each notebook
         for notebook_filename in self.notebooks:
             self.convert_single_notebook(notebook_filename)
-            
+
 #-----------------------------------------------------------------------------
 # Main entry point
 #-----------------------------------------------------------------------------
