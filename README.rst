@@ -101,17 +101,17 @@ Run the in IPython or IPython notebook
 
 .. code-block:: python
 
-from kyper.nbconvert.nbconvertapp import NbConvertApp
+    from kyper.nbconvert.nbconvertapp import NbConvertApp
 
-# Convert from v3 to v4.tabs
-conv = NbConvertApp()
-conv.initialize(['--to=notebook', '/home/blue/workspace/kyper-core/docker-builds/flyberry/Untitled70.ipynb'])
-conv.convert_notebooks()
+    # Convert from v3 to v4.tabs
+    conv = NbConvertApp()
+    conv.initialize(['--to=notebook', '/home/blue/workspace/kyper-core/docker-builds/flyberry/Untitled70.ipynb'])
+    conv.convert_notebooks()
 
-# Convert from v4.tabs to v3
-conv = NbConvertApp()
-conv.initialize(['--to=notebook', '--nbformat=3', '/home/blue/workspace/kyper-core/docker-builds/flyberry/Untitled6.ipynb'])
-conv.convert_notebooks()
+    # Convert from v4.tabs to v3
+    conv = NbConvertApp()
+    conv.initialize(['--to=notebook', '--nbformat=3', '/home/blue/workspace/kyper-core/docker-builds/flyberry/Untitled6.ipynb'])
+    conv.convert_notebooks()
 
 Contributing
 ------------
