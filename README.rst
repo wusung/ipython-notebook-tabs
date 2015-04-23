@@ -7,8 +7,6 @@ IPython Notebook Module Tabs
 .. image:: https://travis-ci.org/rgbkrk/bookstore.png?branch=master
    :target: https://travis-ci.org/rgbkrk/bookstore
 
-Add multiple checkpoints for IPython.
-
 *Add your provider with a pull request!*
 
 **Note: IPython Notebook Module Tabs requires IPython 1.0+**
