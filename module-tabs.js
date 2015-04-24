@@ -25,19 +25,22 @@ define(function (require) {
        var end_space = $('<div/>').addClass('end_space').appendTo('#notebook-container');
     });
 
-    var modify_tab_name = function () {
-        console.log("modify_tab_name()")
-        $('#tab-nav').find('a.page-a').each(function(e) {
-            $(e).click(function () {
-                console.log($(e));
-                $(this).find('div.editable').focus()
-                $(this).find('div.editable').attr('contenteditable', 'plaintext-only');
+    var attach_modify_tab_name_event = function () {
+        console.log("start attach_modify_tab_name_event()")
+        $('#tab-nav a.page-a').each(function(index) {
+            console.log($(this));
+            $(this).click(function() {
+                $(this).find('div.editable').attr('contenteditable', 'true');
                 IPython.keyboard_manager.disable();
             })
             .blur(function() {
+                if ($(this).find('div.editable').text() === '') {
+                    $(this).find('div.editable').focus();
+                }
+
                 $(this).find('div.editable').attr('contenteditable', 'false');
                 IPython.keyboard_manager.enable();
-            });
+            })
         });
     }
 
@@ -48,8 +51,9 @@ define(function (require) {
         $('#tab-nav').append('<li class="active" id="nav-id-' + nextTab +
             '"><a href="#nav-content-'+nextTab+
             '" data-toggle="tab" class="page-a" name="Page-' + nextTab + '">' +
+            '<div class="edit-content">' +
             '<div class="editable">' + 'Page'+nextTab + '</div>'+
-            '</a></li>');
+            '</a></div></li>');
         $('#tab-content').append('<div class="tab-pane tabs-tab-pane active" id="nav-content-'+nextTab+'"></div>');
         $("#new-page").appendTo('#tab-nav');
 
@@ -81,7 +85,7 @@ define(function (require) {
 
         // });
 
-        modify_tab_name();
+        attach_modify_tab_name_event();
 
         $('#tab-nav').unbind('click');
         $('div.cell').appendTo('#nav-content-0');
@@ -120,14 +124,18 @@ define(function (require) {
                 sheet_name = 'Page ' + i;
             if (i==0) {
                 $('<li class="active"><a href="#nav-content-' + i + '" data-toggle="tab" class="page-a" name="' + sheet_name + '">' +
+                    '<div class="edit-content">' +
                     '<div class="editable">' + sheet_name + '</div>' +
-                    '</a></li>')
+                    '<button class="close closeTab" type="button"><i class="fa fa-times"></i></button>' +
+                    '</div></a></li>')
                     .appendTo('#tab-nav');
             }
             else {
                 $('<li><a href="#nav-content-' + i + '" data-toggle="tab" class="page-a" name="' + sheet_name + '">' +
+                    '<div class="edit-content">' +
                     '<div class="editable">' + sheet_name + '</div>' +
-                    '</a></li>')
+                    '<button class="close closeTab" type="button"><i class="fa fa-times"></i></button>' +
+                    '</div></a></li>')
                     .appendTo('#tab-nav');
             }
 
@@ -139,9 +147,9 @@ define(function (require) {
             new_page();
         }
 
-        $('a.page-a').each(function() {
+        $('a.page-a .edit-content').each(function() {
             if ($(this).find('.closeTab').size() == 0) {
-                $(this).append('<button class="close closeTab" type="button"><i class="fa fa-times"></i></button>');
+                //$(this).append('<button class="close closeTab" type="button"><i class="fa fa-times"></i></button>');
             }
         });
         registerCloseEvent();
@@ -162,14 +170,11 @@ define(function (require) {
                 //     IPython.keyboard_manager.enable();
                 // });
 
-                modify_tab_name();
-
                 $(this).unbind('click');
             });
 
 
         $("#new-page").click(function(e) {
-            //var nextTab = $('.nav-tabs li').size()+1;
             var nextTab = $('#tab-nav.nav-tabs li').size()-1;
             $('#tab-nav').append('<li id="nav-id-' + nextTab +
                 '"><a href="#nav-content-'+nextTab+
@@ -178,12 +183,11 @@ define(function (require) {
             $('#tab-content').append('<div class="tab-pane tabs-tab-pane" id="nav-content-'+nextTab+'"></div>');
             $("#new-page").appendTo('#tab-nav');
 
-            $('a[href="#nav-content-' + nextTab + '"]')
+            $('a[href="#nav-content-' + nextTab + '" .edit-content]')
                     .append('<button class="close closeTab" type="button"><i class="fa fa-times"></i></button>');
 
             $('.page-a').off('shown.bs.tab');
             $('.page-a').on('shown.bs.tab', function (e) {
-
                 $('.end_space').appendTo(e.target.hash);
                 Custom.worksheetIndex = e.target.hash.replace('#nav-content-', '');
                 if ($('#nav-content-' + Custom.worksheetIndex).find('div.cell').length == 0) {
@@ -206,10 +210,12 @@ define(function (require) {
             //     IPython.keyboard_manager.enable();
             // });
 
-            modify_tab_name();
+            attach_modify_tab_name_event();
 
             $('#tab-nav').unbind('click');
         });
+
+        attach_modify_tab_name_event();
 
         $('.end_space').appendTo('.tabs-tab-pane.active');
         $('#dock').find('.launcher').find('a[href="/tree"]').parent().addClass('active', 'true');

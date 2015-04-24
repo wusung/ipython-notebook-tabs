@@ -1,6 +1,9 @@
 .editable {
-  display: inline-block
+  display: inline-block;
 }
 .closeTab {
-  display: inline-block
+  display: inline-block;
+}
+.edit-content {
+  display: inline-block;
 }
