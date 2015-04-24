@@ -34,12 +34,49 @@ define(function (require) {
                 IPython.keyboard_manager.disable();
             })
             .blur(function() {
-                if ($(this).find('div.editable').text() === '') {
-                    $(this).find('div.editable').focus();
-                }
-
                 $(this).find('div.editable').attr('contenteditable', 'false');
                 IPython.keyboard_manager.enable();
+            })
+            .focusout(function() {
+                if ($(this).find('div.editable').text() === '') {
+
+                    var dialog = $('<div/>').append(
+                        $("<p/>").addClass("rename-message")
+                            .text('Tab name cannot be empty.')
+                    ).append(
+                        $("<br/>")
+                    )
+
+                    var edit_div = $(this).find('div.editable');
+                    IPython.dialog.modal({
+                        title: "Rename Tab Name",
+                        body: dialog,
+                        buttons : {
+                            "OK": {
+                                    class: "btn-primary",
+                                    click: function () {
+                                        $(this).find('div.editable').attr('contenteditable', 'false');
+                                        IPython.keyboard_manager.disable();
+                                        edit_div.focus();
+                                    }
+                                  }
+                            },
+                        open : function (event, ui) {
+                            var that = $(this);
+                            // Upon ENTER, click the OK button.
+                            that.find('input[type="text"]').keydown(function (event, ui) {
+                                if (event.which === IPython.keyboard.keycodes.enter) {
+                                    that.find('.btn-primary').first().click();
+                                    return false;
+                                }
+                            });
+                            that.find('input[type="text"]').focus().select();
+                        }
+                    });
+                } else {
+                    $(this).find('div.editable').attr('contenteditable', 'false');
+                    IPython.keyboard_manager.enable();
+                }
             })
         });
     }
@@ -183,7 +220,7 @@ define(function (require) {
             $('#tab-content').append('<div class="tab-pane tabs-tab-pane" id="nav-content-'+nextTab+'"></div>');
             $("#new-page").appendTo('#tab-nav');
 
-            $('a[href="#nav-content-' + nextTab + '" .edit-content]')
+            $('a[href="#nav-content-' + nextTab + '"]').find('.edit-content')
                     .append('<button class="close closeTab" type="button"><i class="fa fa-times"></i></button>');
 
             $('.page-a').off('shown.bs.tab');
