@@ -26,7 +26,6 @@ define(function (require) {
     });
 
     var attach_modify_tab_name_event = function () {
-        console.log("start attach_modify_tab_name_event()")
         $('#tab-nav a.page-a').each(function(index) {
             $(this).find('div.editable').on('keydown', function(e) {
                 if (e.keyCode == 13)
@@ -34,7 +33,6 @@ define(function (require) {
                 return true;
             })
 
-            console.log($(this));
             $(this).click(function() {
                 $(this).find('div.editable').attr('contenteditable', 'true');
                 IPython.keyboard_manager.disable();
