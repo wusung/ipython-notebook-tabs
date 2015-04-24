@@ -25,7 +25,21 @@ define(function (require) {
        var end_space = $('<div/>').addClass('end_space').appendTo('#notebook-container');
     });
 
-    var attach_modify_tab_name_event = function () {
+    var registerCloseEvent = function() {
+        $(".closeTab").off('click');
+        $(".closeTab").click(function () {
+            //there are multiple elements which has .closeTab icon so close the tab whose close icon is clicked
+            var tabContentId = $(this).parent().parent().attr("href");
+            $(this).parent().parent().remove(); //remove li of tab
+            $('#tab-nav a:last').tab('show'); // Select first tab
+            $(tabContentId).remove(); //remove respective tab content
+
+            var tabId = tabContentId.replace('#nav-content-', '');
+            Custom.content.worksheets.splice(tabId, 1);
+        });
+    }
+
+    var attach_rename_tab_event = function () {
         $('#tab-nav a.page-a').each(function(index) {
             $(this).find('div.editable').on('keydown', function(e) {
                 if (e.keyCode == 13)
@@ -111,27 +125,13 @@ define(function (require) {
             $('.unrendered').remove();
         });
 
-        attach_modify_tab_name_event();
+        attach_rename_tab_event();
 
         $('#tab-nav').unbind('click');
         $('div.cell').appendTo('#nav-content-0');
         $('.end_space').appendTo('#nav-content-0');
 
         registerCloseEvent();
-    }
-
-    var registerCloseEvent = function() {
-        $(".closeTab").off('click');
-        $(".closeTab").click(function () {
-            //there are multiple elements which has .closeTab icon so close the tab whose close icon is clicked
-            var tabContentId = $(this).parent().parent().attr("href");
-            $(this).parent().parent().remove(); //remove li of tab
-            $('#tab-nav a:last').tab('show'); // Select first tab
-            $(tabContentId).remove(); //remove respective tab content
-
-            var tabId = tabContentId.replace('#nav-content-', '');
-            Custom.content.worksheets.splice(tabId, 1);
-        });
     }
 
     $([IPython.events]).on('notebook_loaded.Notebook', function() {
@@ -211,12 +211,12 @@ define(function (require) {
                 registerCloseEvent();
             });
 
-            attach_modify_tab_name_event();
+            attach_rename_tab_event();
 
             $('#tab-nav').unbind('click');
         });
 
-        attach_modify_tab_name_event();
+        attach_rename_tab_event();
 
         $('.end_space').appendTo('.tabs-tab-pane.active');
         $('#dock').find('.launcher').find('a[href="/tree"]').parent().addClass('active', 'true');
