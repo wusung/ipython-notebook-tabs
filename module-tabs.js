@@ -28,6 +28,12 @@ define(function (require) {
     var attach_modify_tab_name_event = function () {
         console.log("start attach_modify_tab_name_event()")
         $('#tab-nav a.page-a').each(function(index) {
+            $(this).find('div.editable').on('keydown', function(e) {
+                if (e.keyCode == 13)
+                    return false;
+                return true;
+            })
+
             console.log($(this));
             $(this).click(function() {
                 $(this).find('div.editable').attr('contenteditable', 'true');
@@ -39,7 +45,6 @@ define(function (require) {
             })
             .focusout(function() {
                 if ($(this).find('div.editable').text() === '') {
-
                     var dialog = $('<div/>').append(
                         $("<p/>").addClass("rename-message")
                             .text('Tab name cannot be empty.')
@@ -90,6 +95,7 @@ define(function (require) {
             '" data-toggle="tab" class="page-a" name="Page-' + nextTab + '">' +
             '<div class="edit-content">' +
             '<div class="editable">' + 'Page'+nextTab + '</div>'+
+            '<button class="close closeTab" type="button"><i class="fa fa-times"></i></button>' +
             '</a></div></li>');
         $('#tab-content').append('<div class="tab-pane tabs-tab-pane active" id="nav-content-'+nextTab+'"></div>');
         $("#new-page").appendTo('#tab-nav');
@@ -107,21 +113,6 @@ define(function (require) {
             $('.unrendered').remove();
         });
 
-        // $('#tab-nav').find('.page-a').click(function (e) {
-        //     e.preventDefault();
-        //     console.log($(this))
-        //     $(this).find('div.editable').focus()
-        //     $(this).find('div.editable').attr('contenteditable', 'plaintext-only');
-        //     IPython.keyboard_manager.disable();
-        // })
-        // .blur(function() {
-        //     $(this).find('div.editable').attr('contenteditable', 'false');
-        //     IPython.keyboard_manager.enable();
-        // })
-        // .on('keypress', function(e) {
-
-        // });
-
         attach_modify_tab_name_event();
 
         $('#tab-nav').unbind('click');
@@ -135,7 +126,7 @@ define(function (require) {
         $(".closeTab").off('click');
         $(".closeTab").click(function () {
             //there are multiple elements which has .closeTab icon so close the tab whose close icon is clicked
-            var tabContentId = $(this).parent().attr("href");
+            var tabContentId = $(this).parent().parent().attr("href");
             $(this).parent().parent().remove(); //remove li of tab
             $('#tab-nav a:last').tab('show'); // Select first tab
             $(tabContentId).remove(); //remove respective tab content
@@ -184,11 +175,6 @@ define(function (require) {
             new_page();
         }
 
-        $('a.page-a .edit-content').each(function() {
-            if ($(this).find('.closeTab').size() == 0) {
-                //$(this).append('<button class="close closeTab" type="button"><i class="fa fa-times"></i></button>');
-            }
-        });
         registerCloseEvent();
 
         $("#tab-nav").append('<li id="new-page"><a href="#" class="glyphicon-plus"></a></li>')
@@ -196,27 +182,18 @@ define(function (require) {
                 //$(this).attr('contenteditable', 'false');
             })
             .click(function() {
-                // $('#tab-nav').find('a[data-toggle="tab"]').click(function () {
-                //     console.log($(this))
-                //     $(this).find('div.editable').focus();
-                //     $(this).find('div.editable').attr('contenteditable', 'plaintext-only');
-                //     IPython.keyboard_manager.disable();
-                // })
-                // .blur(function() {
-                //     $(this).find('div.editable').attr('contenteditable', 'false');
-                //     IPython.keyboard_manager.enable();
-                // });
 
                 $(this).unbind('click');
             });
-
 
         $("#new-page").click(function(e) {
             var nextTab = $('#tab-nav.nav-tabs li').size()-1;
             $('#tab-nav').append('<li id="nav-id-' + nextTab +
                 '"><a href="#nav-content-'+nextTab+
-                '" data-toggle="tab" class="page-a">Page'+nextTab+
-                '</a></li>');
+                '" data-toggle="tab" class="page-a">' + //Page'+nextTab+
+                '<div class="edit-content">' +
+                '<div class="editable">' + 'Page'+nextTab + '</div>'+
+                '</div></a></li>');
             $('#tab-content').append('<div class="tab-pane tabs-tab-pane" id="nav-content-'+nextTab+'"></div>');
             $("#new-page").appendTo('#tab-nav');
 
@@ -235,17 +212,6 @@ define(function (require) {
                 $('.unrendered').remove();
                 registerCloseEvent();
             });
-
-            // $('#tab-nav').find('.page-a').click(function () {
-            //     console.log($(this))
-            //     $(this).find('div.editable').focus()
-            //     $(this).find('div.editable').attr('contenteditable', 'plaintext-only');
-            //     IPython.keyboard_manager.disable();
-            // })
-            // .blur(function() {
-            //     $(this).find('div.editable').attr('contenteditable', 'false');
-            //     IPython.keyboard_manager.enable();
-            // });
 
             attach_modify_tab_name_event();
 
