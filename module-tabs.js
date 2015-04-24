@@ -23,48 +23,67 @@ define(function (require) {
     $([IPython.events]).on('notebook_restoring.Notebook', function() {
        $('#notebook-container').html('');
        var end_space = $('<div/>').addClass('end_space').appendTo('#notebook-container');
-    });    
-        
+    });
+
+    var modify_tab_name = function () {
+        console.log("modify_tab_name()")
+        $('#tab-nav').find('a.page-a').each(function(e) {
+            $(e).click(function () {
+                console.log($(e));
+                $(this).find('div.editable').focus()
+                $(this).find('div.editable').attr('contenteditable', 'plaintext-only');
+                IPython.keyboard_manager.disable();
+            })
+            .blur(function() {
+                $(this).find('div.editable').attr('contenteditable', 'false');
+                IPython.keyboard_manager.enable();
+            });
+        });
+    }
+
     var new_page = function () {
         var nextTab = $('#tab-nav.nav-tabs li').size()-1;
         if (nextTab < 0)
             nextTab = 0;
-        $('#tab-nav').append('<li class="active" id="nav-id-' + nextTab + 
+        $('#tab-nav').append('<li class="active" id="nav-id-' + nextTab +
             '"><a href="#nav-content-'+nextTab+
-            '" data-toggle="tab" class="page-a" name="Page-' + nextTab + '"' +
-            '>Page'+nextTab+
+            '" data-toggle="tab" class="page-a" name="Page-' + nextTab + '">' +
+            '<div class="editable">' + 'Page'+nextTab + '</div>'+
             '</a></li>');
         $('#tab-content').append('<div class="tab-pane tabs-tab-pane active" id="nav-content-'+nextTab+'"></div>');
         $("#new-page").appendTo('#tab-nav');
-        
+
         $('.page-a').off('shown.bs.tab');
         $('.page-a').on('shown.bs.tab', function (e) {
-            
+
             $('.end_space').appendTo(e.target.hash);
             Custom.worksheetIndex = e.target.hash.replace('#nav-content-', '');
             if ($('#nav-content-' + Custom.worksheetIndex).find('div.cell').length == 0) {
                 $('.end_space').appendTo(e.target.hash);
-                IPython.notebook.insert_cell_below('code');            
-            }            
+                IPython.notebook.insert_cell_below('code');
+            }
 
             $('.unrendered').remove();
         });
 
-        $('#tab-nav').find('.page-a').click(function (e) {
-            e.preventDefault();
+        // $('#tab-nav').find('.page-a').click(function (e) {
+        //     e.preventDefault();
+        //     console.log($(this))
+        //     $(this).find('div.editable').focus()
+        //     $(this).find('div.editable').attr('contenteditable', 'plaintext-only');
+        //     IPython.keyboard_manager.disable();
+        // })
+        // .blur(function() {
+        //     $(this).find('div.editable').attr('contenteditable', 'false');
+        //     IPython.keyboard_manager.enable();
+        // })
+        // .on('keypress', function(e) {
 
-            $(this).attr('contenteditable', 'true');
-            IPython.keyboard_manager.disable();
-        })
-        .blur(function() {
-            $(this).attr('contenteditable', 'false');
-            IPython.keyboard_manager.enable();
-        })
-        .on('keypress', function(e) {
+        // });
 
-        });
+        modify_tab_name();
 
-        $('#tab-nav').unbind('click');  
+        $('#tab-nav').unbind('click');
         $('div.cell').appendTo('#nav-content-0');
         $('.end_space').appendTo('#nav-content-0');
 
@@ -100,16 +119,16 @@ define(function (require) {
             if (worksheet.name === undefined)
                 sheet_name = 'Page ' + i;
             if (i==0) {
-                $('<li class="active"><a href="#nav-content-' + i + '" data-toggle="tab" class="page-a" name="' + sheet_name + '">' + 
-                    sheet_name + 
+                $('<li class="active"><a href="#nav-content-' + i + '" data-toggle="tab" class="page-a" name="' + sheet_name + '">' +
+                    '<div class="editable">' + sheet_name + '</div>' +
                     '</a></li>')
                     .appendTo('#tab-nav');
             }
             else {
                 $('<li><a href="#nav-content-' + i + '" data-toggle="tab" class="page-a" name="' + sheet_name + '">' +
-                    sheet_name +  
+                    '<div class="editable">' + sheet_name + '</div>' +
                     '</a></li>')
-                    .appendTo('#tab-nav');            
+                    .appendTo('#tab-nav');
             }
 
             $('.cell[wsid=' + i + ']').appendTo('#nav-content-' + i);
@@ -122,24 +141,28 @@ define(function (require) {
 
         $('a.page-a').each(function() {
             if ($(this).find('.closeTab').size() == 0) {
-                $(this).append('<button class="close closeTab" type="button">x</button>');
+                $(this).append('<button class="close closeTab" type="button"><i class="fa fa-times"></i></button>');
             }
-        });        
+        });
         registerCloseEvent();
-        
+
         $("#tab-nav").append('<li id="new-page"><a href="#" class="glyphicon-plus"></a></li>')
             .blur(function() {
                 //$(this).attr('contenteditable', 'false');
             })
             .click(function() {
-                $('#tab-nav').find('a[data-toggle="tab"]').click(function () {
-                    $(this).attr('contenteditable', 'true');
-                    IPython.keyboard_manager.disable();
-                })
-                .blur(function() {
-                    $(this).attr('contenteditable', 'false');
-                    IPython.keyboard_manager.enable();
-                });
+                // $('#tab-nav').find('a[data-toggle="tab"]').click(function () {
+                //     console.log($(this))
+                //     $(this).find('div.editable').focus();
+                //     $(this).find('div.editable').attr('contenteditable', 'plaintext-only');
+                //     IPython.keyboard_manager.disable();
+                // })
+                // .blur(function() {
+                //     $(this).find('div.editable').attr('contenteditable', 'false');
+                //     IPython.keyboard_manager.enable();
+                // });
+
+                modify_tab_name();
 
                 $(this).unbind('click');
             });
@@ -148,7 +171,7 @@ define(function (require) {
         $("#new-page").click(function(e) {
             //var nextTab = $('.nav-tabs li').size()+1;
             var nextTab = $('#tab-nav.nav-tabs li').size()-1;
-            $('#tab-nav').append('<li id="nav-id-' + nextTab + 
+            $('#tab-nav').append('<li id="nav-id-' + nextTab +
                 '"><a href="#nav-content-'+nextTab+
                 '" data-toggle="tab" class="page-a">Page'+nextTab+
                 '</a></li>');
@@ -156,11 +179,11 @@ define(function (require) {
             $("#new-page").appendTo('#tab-nav');
 
             $('a[href="#nav-content-' + nextTab + '"]')
-                    .append('<button class="close closeTab" type="button">x</button>');
+                    .append('<button class="close closeTab" type="button"><i class="fa fa-times"></i></button>');
 
             $('.page-a').off('shown.bs.tab');
             $('.page-a').on('shown.bs.tab', function (e) {
-                
+
                 $('.end_space').appendTo(e.target.hash);
                 Custom.worksheetIndex = e.target.hash.replace('#nav-content-', '');
                 if ($('#nav-content-' + Custom.worksheetIndex).find('div.cell').length == 0) {
@@ -172,25 +195,29 @@ define(function (require) {
                 registerCloseEvent();
             });
 
-            $('#tab-nav').find('.page-a').click(function () {
-                $(this).attr('contenteditable', 'true');
-                IPython.keyboard_manager.disable();
-            })
-            .blur(function() {
-                $(this).attr('contenteditable', 'false');
-                IPython.keyboard_manager.enable();
-            });
+            // $('#tab-nav').find('.page-a').click(function () {
+            //     console.log($(this))
+            //     $(this).find('div.editable').focus()
+            //     $(this).find('div.editable').attr('contenteditable', 'plaintext-only');
+            //     IPython.keyboard_manager.disable();
+            // })
+            // .blur(function() {
+            //     $(this).find('div.editable').attr('contenteditable', 'false');
+            //     IPython.keyboard_manager.enable();
+            // });
 
-            $('#tab-nav').unbind('click');        
-        });    
-        
+            modify_tab_name();
+
+            $('#tab-nav').unbind('click');
+        });
+
         $('.end_space').appendTo('.tabs-tab-pane.active');
         $('#dock').find('.launcher').find('a[href="/tree"]').parent().addClass('active', 'true');
     });
 
     $([IPython.events]).on('notebook_loading.Notebook', function() {
 
-        
+
     });
 
     if (IPython.Notebook !== undefined)
@@ -200,7 +227,7 @@ define(function (require) {
 
     /**
      * Create an HTML and CSS representation of the notebook.
-     * 
+     *
      * @method create_elements
      */
     if (IPython.Notebook !== undefined)
@@ -223,9 +250,9 @@ define(function (require) {
 
     /**
      * Load a notebook from JSON (.ipynb).
-     * 
+     *
      * This currently handles one worksheet: others are deleted.
-     * 
+     *
      * @method fromJSON
      * @param {Object} data JSON representation of a notebook
      */
@@ -270,7 +297,7 @@ define(function (require) {
             }
 
             $('.end_space').appendTo('#nav-content-' + j);
-            
+
             var worksheet = content.worksheets[j];
             if (worksheet !== undefined) {
                 if (worksheet.metadata) {
@@ -282,7 +309,7 @@ define(function (require) {
                 var new_cell = null;
                 for (i=0; i<ncells; i++) {
                     cell_data = new_cells[i];
-                    Custom.worksheetIndex = j;    
+                    Custom.worksheetIndex = j;
                     new_cell = this.insert_cell_at_index(cell_data.cell_type, i);
                     new_cell.fromJSON(cell_data);
                     if (new_cell.cell_type === 'code' && !new_cell.output_area.trusted) {
@@ -298,20 +325,20 @@ define(function (require) {
             $([IPython.events]).trigger("trust_changed.Notebook", trusted);
         }
     };
-        
+
     var get_all_cells = function() {
         return $('div.cell').toArray().map(function (e) {
             return $(e).data("cell");
         });
-    }    
-        
+    }
+
     /**
      * Dump this notebook into a JSON-friendly object.
-     * 
+     *
      * @method toJSON
      * @return {Object} A JSON-friendly representation of this notebook.
      */
-    if (IPython.Notebook !== undefined) 
+    if (IPython.Notebook !== undefined)
     IPython.Notebook.prototype.toJSON = function () {
 
         delete this.metadata.orig_nbformat;
@@ -328,7 +355,7 @@ define(function (require) {
             if (cell.cell_type == 'code' && !cell.output_area.trusted) {
                 trusted = false;
             }
-            
+
             var wsid = 0;
             if ($(cell.element).attr('wsid') === undefined) {
                 cell_array[i] = cell.toJSON();
@@ -339,13 +366,13 @@ define(function (require) {
             if (worksheets[wsid] === undefined) {
                 worksheets[wsid] = {};
             }
-            
+
             if (worksheets[wsid].cells === undefined) {
                 worksheets[wsid].cells = [];
             }
             worksheets[wsid]['name'] = //$('a[href="#nav-content-' + wsid + '"]').attr('name');
                 $('a[href="#nav-content-' + wsid + '"]').text().replace('x', '');
-            worksheets[wsid].cells.push(cell.toJSON()); 
+            worksheets[wsid].cells.push(cell.toJSON());
         }
 
         var data = {
@@ -354,16 +381,16 @@ define(function (require) {
             nbformat: this.nbformat,
             nbformat_minor: this.nbformat_minor
         };
-        
+
         if (trusted !== this.trusted) {
             this.trusted = trusted;
             this.events.trigger("trust_changed.Notebook", trusted);
         }
         return data;
-    }; 
+    };
 
     /**
-     * Once a session is started, link the code cells to the kernel and pass the 
+     * Once a session is started, link the code cells to the kernel and pass the
      * comm manager to the widget manager
      *
      */
@@ -378,7 +405,7 @@ define(function (require) {
             }
         }
     };
-    
+
     if (IPython.Notebook !== undefined)
     IPython.Notebook.prototype._insert_element_at_index = function(element, index){
         if (element === undefined){
@@ -406,12 +433,12 @@ define(function (require) {
             this.set_dirty(true);
         }
         return true;
-    };    
+    };
 
     if (IPython.Notebook !== undefined)
         IPython.CodeCell.prototype.create_element = function () {
             IPython.Cell.prototype.create_element.apply(this, arguments);
-          
+
             var that = this;
 
             var cell =  $('<div></div>').addClass('cell code_cell');
@@ -422,7 +449,7 @@ define(function (require) {
             var prompt = $('<div/>').addClass('prompt input_prompt');
             var inner_cell = $('<div/>').addClass('inner_cell');
             this.celltoolbar = new celltoolbar.CellToolbar({
-                cell: this, 
+                cell: this,
                 notebook: this.notebook});
             inner_cell.append(this.celltoolbar.element);
             var input_area = $('<div/>').addClass('input_area');
@@ -455,7 +482,7 @@ define(function (require) {
                 .addClass('close')
                 .html('&times;')
                 .click(function() {
-                    widget_area.slideUp('', function(){ 
+                    widget_area.slideUp('', function(){
                         for (var i = 0; i < that.widget_views.length; i++) {
                             var view = that.widget_views[i];
                             view.remove();
@@ -465,7 +492,7 @@ define(function (require) {
                             view.off('comm:dead', that._widget_dead);
                         }
                         that.widget_views = [];
-                        widget_subarea.html(''); 
+                        widget_subarea.html('');
                     });
                 })
                 .appendTo(widget_prompt);
@@ -474,9 +501,9 @@ define(function (require) {
             cell.append(input).append(widget_area).append(output);
             this.element = cell;
             this.output_area = new outputarea.OutputArea({
-                selector: output, 
-                prompt_area: true, 
-                events: this.events, 
+                selector: output,
+                prompt_area: true,
+                events: this.events,
                 keyboard_manager: this.keyboard_manager});
             this.completer = new completer.Completer(this, this.events);
 
@@ -485,12 +512,12 @@ define(function (require) {
                     worksheets: []
                 };
             }
-            
-            if (Custom.content.worksheets.length == 0) {  
+
+            if (Custom.content.worksheets.length == 0) {
                 $('#div.cell').appendTo('#tab-content');
             }
-        };        
-        
+        };
+
     if (IPython.Notebook !== undefined)
         /**
          * Create the DOM element of the TextCell
@@ -510,7 +537,7 @@ define(function (require) {
             cell.append(prompt);
             var inner_cell = $('<div/>').addClass('inner_cell');
             this.celltoolbar = new celltoolbar.CellToolbar({
-                cell: this, 
+                cell: this,
                 notebook: this.notebook});
             inner_cell.append(this.celltoolbar.element);
             var input_area = $('<div/>').addClass('input_area');
@@ -528,10 +555,10 @@ define(function (require) {
                 .attr('tabindex','-1');
             inner_cell.append(input_area).append(render_area);
             cell.append(inner_cell);
-            this.element = cell;   
+            this.element = cell;
 
-             if (Custom.content.worksheets.length == 0) {  
+             if (Custom.content.worksheets.length == 0) {
                 $('#div.cell').appendTo('#tab-content');
-            }         
+            }
         };
 });
