@@ -214,6 +214,7 @@ define(function (require) {
             attach_rename_tab_event();
 
             $('#tab-nav').unbind('click');
+            $('#tab-nav .page-a').last().tab('show');// Select last tab
         });
 
         attach_rename_tab_event();
