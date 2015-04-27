@@ -37,10 +37,10 @@ def get_version(nb):
 
 
 def reads(s, **kwargs):
-    """Read a notebook from a json string and return the 
+    """Read a notebook from a json string and return the
     NotebookNode object.
 
-    This function properly reads notebooks of any version.  No version 
+    This function properly reads notebooks of any version.  No version
     conversion is performed.
 
     Parameters
@@ -54,7 +54,7 @@ def reads(s, **kwargs):
         The notebook that was read.
     """
     from . import versions, NBFormatError
-    
+
     nb_dict = parse_json(s, **kwargs)
     (major, minor) = get_version(nb_dict)
 
@@ -67,7 +67,7 @@ def reads(s, **kwargs):
 def read(fp, **kwargs):
     """Read a notebook from a file and return the NotebookNode object.
 
-    This function properly reads notebooks of any version.  No version 
+    This function properly reads notebooks of any version.  No version
     conversion is performed.
 
     Parameters

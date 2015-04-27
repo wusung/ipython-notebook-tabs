@@ -48,7 +48,7 @@ get_logger().debug(__file__)
 
 def reads(s, as_version, **kwargs):
     """Read a notebook from a string and return the NotebookNode object as the given version.
-    
+
     The string can contain a notebook of any version.
     The notebook will be returned `as_version`, converting, if necessary.
 
@@ -139,9 +139,9 @@ def read(fp, as_version, **kwargs):
 
 def write(nb, fp, version=NO_CONVERT, **kwargs):
     """Write a notebook to a file in a given nbformat version.
-    
+
     The file-like object must accept unicode input.
-    
+
     Parameters
     ----------
     nb : NotebookNode

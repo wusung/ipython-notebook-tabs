@@ -18,8 +18,24 @@ def rejoin_lines(nb):
 
     Used when reading JSON files that may have been passed through split_lines.
     """
-    for ws in nb.worksheets:
-        for cell in ws.cells:
+
+    if nb.nbformat_minor == 1:
+        for ws in nb.worksheets:
+            for cell in ws.cells:
+                if 'source' in cell and isinstance(cell.source, list):
+                    cell.source = ''.join(cell.source)
+                if cell.get('cell_type', None) == 'code':
+                    for output in cell.get('outputs', []):
+                        output_type = output.get('output_type', '')
+                        if output_type in {'execute_result', 'display_data'}:
+                            for key, value in output.get('data', {}).items():
+                                if key != 'application/json' and isinstance(value, list):
+                                    output.data[key] = ''.join(value)
+                        elif output_type:
+                            if isinstance(output.get('text', ''), list):
+                                output.text = ''.join(output.text)
+    else:
+        for cell in nb.cells:
             if 'source' in cell and isinstance(cell.source, list):
                 cell.source = ''.join(cell.source)
             if cell.get('cell_type', None) == 'code':
@@ -44,17 +60,47 @@ def split_lines(nb):
     """
     #self.log.info(nb.metadata.get('orig_nbformat'))
     orig_nbformat = nb.metadata.pop('orig_nbformat', None)
+    print ('format=v{}.{}'.format(orig_nbformat, nb.nbformat_minor))
+    if nb.nbformat_minor == 1:
+        if orig_nbformat is None:
+            for ws in nb.worksheets:
+                if ws is not None:
+                    #print(ws['cells'])
+                    for cell in ws['cells']:
+                        source = cell.get('source', None)
+                        if isinstance(source, string_types):
+                            cell['source'] = source.splitlines(True)
+                        if cell.cell_type == 'code':
+                            for output in cell.outputs:
+                                if output.output_type in {'execute_result', 'display_data'}:
+                                    for key, value in output.data.items():
+                                        if key != 'application/json' and isinstance(value, string_types):
+                                            output.data[key] = value.splitlines(True)
+                                elif output.output_type == 'stream':
+                                    if isinstance(output.text, string_types):
+                                        output.text = output.text.splitlines(True)
 
-    print ("orig_nbformat=" + `orig_nbformat`)
-    if orig_nbformat is None:
-        for ws in nb.worksheets:
-            if ws is not None:
+        else:
+            #nb = convert.upgrade(nb, 3, 0)
+            for ws in nb.worksheets:
                 for cell in ws.cells:
+                    cell = convert.upgrade_cell(cell)
                     source = cell.get('source', None)
                     if isinstance(source, string_types):
                         cell['source'] = source.splitlines(True)
+
+                    if cell.cell_type == 'code':
+                        cell.source = cell.get('input', '')
+                    elif cell.cell_type == 'heading':
+                        level = cell.get('level', 1)
+                        cell.source = u'{hashes} {single_line}'.format(
+                            hashes='#' * level,
+                            single_line = ' '.join(cell.get('input', '').splitlines()),
+                        )
+
                     if cell.cell_type == 'code':
                         for output in cell.outputs:
+                            #output = convert.upgrade_output(output)
                             if output.output_type in {'execute_result', 'display_data'}:
                                 for key, value in output.data.items():
                                     if key != 'application/json' and isinstance(value, string_types):
@@ -63,38 +109,24 @@ def split_lines(nb):
                                 if isinstance(output.text, string_types):
                                     output.text = output.text.splitlines(True)
 
+                    #cell['level'] = 1
+                    cell.source = source
+        nb.pop('cells', None)
     else:
-        #nb = convert.upgrade(nb, 3, 0)
-        for ws in nb.worksheets:
-            for cell in ws.cells:
-                cell = convert.upgrade_cell(cell)
-                source = cell.get('source', None)
-                if isinstance(source, string_types):
-                    cell['source'] = source.splitlines(True)
+        for cell in nb.cells:
+            source = cell.get('source', None)
+            if isinstance(source, string_types):
+                cell['source'] = source.splitlines(True)
 
-                if cell.cell_type == 'code':
-                    cell.source = cell.get('input', '')
-                elif cell.cell_type == 'heading':
-                    level = cell.get('level', 1)
-                    cell.source = u'{hashes} {single_line}'.format(
-                        hashes='#' * level,
-                        single_line = ' '.join(cell.get('input', '').splitlines()),
-                    )
-
-                if cell.cell_type == 'code':
-                    for output in cell.outputs:
-                        #output = convert.upgrade_output(output)
-                        if output.output_type in {'execute_result', 'display_data'}:
-                            for key, value in output.data.items():
-                                if key != 'application/json' and isinstance(value, string_types):
-                                    output.data[key] = value.splitlines(True)
-                        elif output.output_type == 'stream':
-                            if isinstance(output.text, string_types):
-                                output.text = output.text.splitlines(True)
-
-                #cell['level'] = 1
-                cell.source = source
-    nb.pop('cells', None)
+            if cell.cell_type == 'code':
+                for output in cell.outputs:
+                    if output.output_type in {'execute_result', 'display_data'}:
+                        for key, value in output.data.items():
+                            if key != 'application/json' and isinstance(value, string_types):
+                                output.data[key] = value.splitlines(True)
+                    elif output.output_type == 'stream':
+                        if isinstance(output.text, string_types):
+                            output.text = output.text.splitlines(True)
     return nb
 
 def strip_transient(nb):
@@ -102,15 +134,18 @@ def strip_transient(nb):
 
     This should be called in *both* read and write.
     """
-    print(nb)
     nb.metadata.pop('orig_nbformat', None)
     nb.metadata.pop('orig_nbformat_minor', None)
     nb.metadata.pop('signature', None)
-    for ws in nb.worksheets:
-        if ws is not None:
-            if ws['cells'] is not None:
-                for cell in ws.cells:
-                    cell.metadata.pop('trusted', None)
+    if nb.nbformat_minor == 1:
+        for ws in nb.worksheets:
+            if ws is not None:
+                if ws['cells'] is not None:
+                    for cell in ws['cells']:
+                        cell.metadata.pop('trusted', None)
+    else:
+        for cell in nb.cells:
+            cell.metadata.pop('trusted', None)
     return nb
 
 class NotebookReader(object):
