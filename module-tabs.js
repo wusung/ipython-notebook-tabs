@@ -108,7 +108,7 @@ define(function (require) {
             '<div class="edit-content">' +
             '<div class="editable">' + 'Page'+nextTab + '</div>'+
             '<button class="close closeTab" type="button"><i class="fa fa-times"></i></button>' +
-            '</div></a></div></li>');
+            '</div></a></li>');
         $('#tab-content').append('<div class="tab-pane tabs-tab-pane active" id="nav-content-'+nextTab+'"></div>');
         $("#new-page").appendTo('#tab-nav');
 
