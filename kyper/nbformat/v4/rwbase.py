@@ -48,19 +48,20 @@ def split_lines(nb):
     print ("orig_nbformat=" + `orig_nbformat`)
     if orig_nbformat is None:
         for ws in nb.worksheets:
-            for cell in ws.cells:
-                source = cell.get('source', None)
-                if isinstance(source, string_types):
-                    cell['source'] = source.splitlines(True)
-                if cell.cell_type == 'code':
-                    for output in cell.outputs:
-                        if output.output_type in {'execute_result', 'display_data'}:
-                            for key, value in output.data.items():
-                                if key != 'application/json' and isinstance(value, string_types):
-                                    output.data[key] = value.splitlines(True)
-                        elif output.output_type == 'stream':
-                            if isinstance(output.text, string_types):
-                                output.text = output.text.splitlines(True)
+            if ws is not None:
+                for cell in ws.cells:
+                    source = cell.get('source', None)
+                    if isinstance(source, string_types):
+                        cell['source'] = source.splitlines(True)
+                    if cell.cell_type == 'code':
+                        for output in cell.outputs:
+                            if output.output_type in {'execute_result', 'display_data'}:
+                                for key, value in output.data.items():
+                                    if key != 'application/json' and isinstance(value, string_types):
+                                        output.data[key] = value.splitlines(True)
+                            elif output.output_type == 'stream':
+                                if isinstance(output.text, string_types):
+                                    output.text = output.text.splitlines(True)
 
     else:
         #nb = convert.upgrade(nb, 3, 0)
@@ -106,8 +107,10 @@ def strip_transient(nb):
     nb.metadata.pop('orig_nbformat_minor', None)
     nb.metadata.pop('signature', None)
     for ws in nb.worksheets:
-        for cell in ws.cells:
-            cell.metadata.pop('trusted', None)
+        if ws is not None:
+            if ws['cells'] is not None:
+                for cell in ws.cells:
+                    cell.metadata.pop('trusted', None)
     return nb
 
 class NotebookReader(object):

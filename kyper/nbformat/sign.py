@@ -65,10 +65,11 @@ def yield_code_cells(nb):
         #     if cell['cell_type'] == 'code':
         #         yield cell
         for ws in nb['worksheets']:
-            if ws['cells'] is not None:
-                for cell in ws['cells']:
-                    if cell['cell_type'] == 'code':
-                        yield cell
+            if ws is not None:
+                if ws['cells'] is not None:
+                    for cell in ws['cells']:
+                        if cell['cell_type'] == 'code':
+                            yield cell
     elif nb.nbformat == 3:
         for ws in nb['worksheets']:
             for cell in ws['cells']:

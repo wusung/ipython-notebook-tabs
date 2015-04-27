@@ -382,8 +382,15 @@ define(function (require) {
             worksheets[wsid].cells.push(cell.toJSON());
         }
 
+        var _worksheets = [];
+        for (var index in worksheets) {
+            if (worksheets[index] !== undefined) {
+                _worksheets.push(worksheets[index]);
+            }
+        }
+
         var data = {
-            worksheets : worksheets,
+            worksheets : _worksheets,
             metadata : this.metadata,
             nbformat: this.nbformat,
             nbformat_minor: this.nbformat_minor
