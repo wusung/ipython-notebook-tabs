@@ -66,7 +66,6 @@ def upgrade(nb, from_version=3, from_minor=0):
         _warn_if_invalid(nb, nbformat)
         return nb
     elif from_version == 4 and from_minor == 0:
-        print ('upgrade() to v4.1')
         # nothing to do
         if from_minor != nbformat_minor:
             nb.metadata.orig_nbformat_minor = from_minor
@@ -74,8 +73,6 @@ def upgrade(nb, from_version=3, from_minor=0):
 
         cells = nb.pop('cells', [])
         nb['worksheets'] = [{ "cells": list(cells), "name": "Page0" }]
-        print(nb)
-        #nb['worksheets'].cells.append(cells)
 
         return nb
     else:
@@ -243,14 +240,9 @@ def downgrade(nb):
     nb : NotebookNode
         The Python representation of the notebook to convert.
     """
-    if nb.nbformat_minor == 1:
-        print ('downgrade() v4.1 to v4.0')
-    else:
-        print ('downgrade() to v3')
     if nb.nbformat != nbformat:
         return nb
 
-    print('start downgrade()***********')
     # Validate the notebook before conversion
     _warn_if_invalid(nb, nbformat)
 

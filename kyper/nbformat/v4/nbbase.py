@@ -136,7 +136,6 @@ def new_worksheet(name=None, cells=None, metadata=None):
 
 def new_notebook(name=None, metadata=None, worksheets=None):
     """Create a notebook by name, id and a list of worksheets."""
-    print("new_notebook()===============")
     nb = NotebookNode()
     nb.nbformat = nbformat
     nb.nbformat_minor = nbformat_minor
@@ -169,4 +168,3 @@ def new_metadata(name=None, authors=None, license=None, created=None,
     if gistid is not None:
         metadata.gistid = cast_unicode(gistid)
     return metadata
-    

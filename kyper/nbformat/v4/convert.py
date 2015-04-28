@@ -74,8 +74,6 @@ def upgrade(nb, from_version=3, from_minor=0):
 
         cells = nb.pop('cells', [])
         nb['worksheets'] = [{ "cells": list(cells), "name": "Page0" }]
-        print(nb)
-        #nb['worksheets'].cells.append(cells)
 
         return nb
     else:
@@ -263,8 +261,7 @@ def downgrade(nb):
     nb.nbformat_minor = v4.nbformat_minor
     nb["cells"] = cells
     nb.pop('worksheets', [])
-    print(nb)
-    #cells = [ downgrade_cell(cell) for cell in [ ws.cells for ws in nb.worksheets ]]
+   #cells = [ downgrade_cell(cell) for cell in [ ws.cells for ws in nb.worksheets ]]
 
     # cells = []
     # for ws in nb.worksheets:
