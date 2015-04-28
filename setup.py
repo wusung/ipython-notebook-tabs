@@ -43,12 +43,13 @@ if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
     sys.exit()
 
-packages = ['kyper', 
+packages = ['kyper',
             'kyper.nbformat',
             'kyper.nbformat.v1',
             'kyper.nbformat.v2',
             'kyper.nbformat.v3',
-            'kyper.nbformat.v4']
+            'kyper.nbformat.v4',
+            'kyper.utils',]
 requires = []
 
 with open('requirements.txt') as reqs:
