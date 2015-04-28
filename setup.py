@@ -84,4 +84,5 @@ setup(name='module-tabs',
           'Programming Language :: Python :: 2.7',
           'Topic :: System :: Distributed Computing',
       ),
+      data_files=[('/usr/local/bin/kyper-nbconverter', ['kyper/utils/kyper-nbconverter'])]
 )
