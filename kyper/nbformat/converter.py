@@ -25,11 +25,15 @@ def convert(nb, to_version):
     # Get input notebook version.
     (version, version_minor) = get_version(nb)
 
-    print ("v{}.{}".format(version, version_minor))
+    print ("v{}.{} to v{}".format(version, version_minor, to_version))
     # Check if destination is target version, if so return contents
-    if version == to_version and version_minor == 1:
+    if to_version == 40:
+        convert_function = versions[version].downgrade
+        converted = convert_function(nb)
+        return converted
+    elif version == to_version and version_minor == 1:
+        print('skip converting')
         return nb
-
     # If the version exist, try to convert to it one step at a time.
     elif to_version in versions:
         # Get the the version that this recursion will convert to as a step
@@ -44,9 +48,12 @@ def convert(nb, to_version):
 
         if version_minor == 0:
             convert_function = versions[version].upgrade
+            converted = convert_function(nb, 4, 0)
+        else:
+            convert_function = versions[version].downgrade
+            converted = convert_function(nb)
 
         # Convert and make sure version changed during conversion.
-        converted = convert_function(nb, 4, 0)
         # if converted.get('nbformat', 1) == version:
         #     raise ValueError("Failed to convert notebook from v%d to v%d." % (version, step_version))
 

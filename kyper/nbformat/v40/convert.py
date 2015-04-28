@@ -18,7 +18,7 @@ def _warn_if_invalid(nb, version):
     """Log validation errors, if there are any."""
     from IPython.nbformat import validate, ValidationError
     try:
-        validate(nb, version=version)
+        validate(nb, version=40)
     except ValidationError as e:
         get_logger().error("Notebook JSON is not valid v%i: %s", version, e)
 
@@ -244,13 +244,13 @@ def downgrade(nb):
         The Python representation of the notebook to convert.
     """
     if nb.nbformat_minor == 1:
-        print ('downgrade() v4.1 to v4')
+        print ('downgrade() v4.1 to v4.0')
     else:
         print ('downgrade() to v3')
     if nb.nbformat != nbformat:
         return nb
 
-    print('start downgrade()---------------')
+    print('start downgrade()***********')
     # Validate the notebook before conversion
     _warn_if_invalid(nb, nbformat)
 
@@ -260,24 +260,22 @@ def downgrade(nb):
             cells.append(cell)
 
     nb.nbformat = v4.nbformat
-    nb.nbformat_minor = v4.nbformat_minor
+    nb.nbformat_minor = 0
     nb["cells"] = cells
     nb.pop('worksheets', [])
-    print(nb)
-    #cells = [ downgrade_cell(cell) for cell in [ ws.cells for ws in nb.worksheets ]]
 
     # cells = []
     # for ws in nb.worksheets:
     #     for cell in ws.cells:
     #         cells.append(downgrade_cell(cell))
 
-    #nb.worksheets = [v3.new_worksheet(cells=cells)]
+    #nb.worksheets = [v40.new_worksheet(cells=cells)]
     nb.metadata.setdefault('name', '')
 
     # Validate the converted notebook before returning it
-    #_warn_if_invalid(nb, v3.nbformat)
+    #_warn_if_invalid(nb, v40.nbformat)
 
-    #nb.pop('orig_nbformat')
-    #nb.pop('orig_nbformat_minor')
+    nb.orig_nbformat = nb.metadata.pop('orig_nbformat', nbformat)
+    nb.orig_nbformat_minor = nb.metadata.pop('orig_nbformat_minor', nbformat_minor)
 
     return nb

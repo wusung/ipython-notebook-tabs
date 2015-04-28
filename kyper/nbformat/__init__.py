@@ -15,6 +15,7 @@ from . import v1
 from . import v2
 from . import v3
 from . import v4
+from . import v40
 
 __all__ = ['versions', 'validate', 'ValidationError', 'convert', 'from_dict',
            'NotebookNode', 'current_nbformat', 'current_nbformat_minor',
@@ -26,6 +27,7 @@ versions = {
     2: v2,
     3: v3,
     4: v4,
+   40: v40,
 }
 
 from .validator import validate, ValidationError
