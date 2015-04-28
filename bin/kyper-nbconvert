@@ -1,0 +1,15 @@
+#!/usr/bin/python
+
+# -*- coding: utf-8 -*-
+import re
+import sys
+
+from kyper.nbconvert.nbconvertapp import NbConvertApp
+
+if __name__ == '__main__':
+	print(sys.argv)
+	conv = NbConvertApp()
+	_list = list(sys.argv)
+	_list.pop(0)
+	conv.initialize(_list)
+	conv.convert_notebooks()
