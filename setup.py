@@ -19,6 +19,8 @@ try:
 except ImportError:
     pass
 
+from os.path import join as pjoin, splitext, split as psplit
+
 def get_version():
     '''
     Version slurping without importing bookstore, since dependencies may not be
@@ -84,5 +86,5 @@ setup(name='module-tabs',
           'Programming Language :: Python :: 2.7',
           'Topic :: System :: Distributed Computing',
       ),
-      data_files=[('/usr/local/bin/kyper-nbconvert', ['kyper/utils/kyper-nbconvert'])],
+      scripts={pjoin('bin'): 'kyper-convert'},
 )
