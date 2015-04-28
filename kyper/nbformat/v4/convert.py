@@ -73,7 +73,7 @@ def upgrade(nb, from_version=3, from_minor=0):
         nb.nbformat_minor = nbformat_minor
 
         cells = nb.pop('cells', [])
-        nb['worksheets'] = [{ "cells": list(cells), "name": "Page 0" }]
+        nb['worksheets'] = [{ "cells": list(cells), "name": "Page0" }]
         print(nb)
         #nb['worksheets'].cells.append(cells)
 

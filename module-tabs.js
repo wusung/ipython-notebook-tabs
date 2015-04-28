@@ -541,7 +541,7 @@ define(function (require) {
          */
         IPython.TextCell.prototype.create_element = function () {
 
-            Cell.prototype.create_element.apply(this, arguments);
+            IPython.Cell.prototype.create_element.apply(this, arguments);
             var that = this;
 
             var cell = $("<div>").addClass('cell text_cell');
