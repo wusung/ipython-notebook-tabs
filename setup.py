@@ -86,5 +86,5 @@ setup(name='module-tabs',
           'Programming Language :: Python :: 2.7',
           'Topic :: System :: Distributed Computing',
       ),
-      scripts={pjoin('kyper-convert'): 'kyper-convert'},
+      scripts={pjoin('bin/kyper-convert'): 'kyper-convert'},
 )
